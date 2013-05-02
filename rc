@@ -4,45 +4,7 @@
 all_daemons="syslog-ng iptables crond dhcpcd sshd privoxy"
 default_daemons="$all_daemons"
 
-start_syslog-ng () { /usr/sbin/syslog-ng; }
-stop_syslog-ng() { killall syslog-ng; }
-start_iptables () {
-    IPTABLES_CONF=/etc/iptables/iptables.rules
-    /usr/sbin/iptables-restore < $IPTABLES_CONF
-}
-stop_iptables () {
-    for table in $(cat /proc/net/ip_tables_names); do
-        iptables-restore < /var/lib/iptables/empty-$table.rules
-    done
-}
-start_crond () { /usr/sbin/crond; }
-stop_crond () { killall crond; }
-start_dhcpcd () { /etc/rc.d/network start; }
-stop_dhcpcd () { /etc/rc.d/network stop; }
-start_sshd () { /usr/sbin/sshd; }
-stop_sshd () { killall sshd; }
-start_privoxy () { /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config; }
-stop_privoxy () { killall privoxy; }
-
-test_iptables () { test $(iptables -L | wc -l) -gt 10; }
-
-#===================
-# utility functions
-echo_color () {
-  color=$1
-  shift
-  echo -e "[1;3${color}m$@[0m"; }
-test_ANY () {
-    if type test_"$1" 2> /dev/null | grep -q function; then
-        test_"$1";
-    else
-        pgrep "$1"
-    fi
-}
-
-#===================
-# start up the system
-if [ "$1" == init ]; then
+on_boot() {
     #===================
     # mount the API filesystem
     # /proc, /sys, /run, /dev, /run/lock, /dev/pts, /dev/shm
@@ -82,30 +44,87 @@ if [ "$1" == init ]; then
     # start the default daemons
     echo_color 3 starting daemons...
     for dmn in $default_daemons; do
-        echo_color 2 starting "$dmn"...
-        start_"$dmn"
+        start_process "$dmn"
     done
+}
+
+start_process() {
+    echo_color 2 starting "$1"...
+    case "$1" in
+    iptables)
+        IPTABLES_CONF=/etc/iptables/iptables.rules
+        /usr/sbin/iptables-restore < $IPTABLES_CONF
+        ;;
+    sshd)
+        /usr/sbin/sshd;;  # requires an absolute path
+    privoxy)
+        /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config
+        ;;
+    dhcpcd)
+        /etc/rc.d/network start;;
+    *)
+        "$1";;
+    esac
+}
+
+stop_process() {
+    echo_color 1 stopping "$1"...
+    case "$1" in
+    iptables)
+        for table in $(cat /proc/net/ip_tables_names); do
+            iptables-restore < /var/lib/iptables/empty-$table.rules
+        done
+        ;;
+    dhcpcd)
+        /etc/rc.d/network stop;;
+    *)
+        killall "$1";;
+    esac
+}
+
+poll_process() {
+    case "$1" in
+    iptables)
+        # really crude
+        test $(iptables -L | wc -l) -gt 10;;
+    *)
+        pgrep "$1" >& /dev/null;;
+    esac
+}
+
+echo_color () {
+  color=$1
+  shift
+  echo -e "[1;3${color}m$@[0m"
+}
+
+if [ "$1" == -h -o "$1" == --help ]; then
+    echo 'usage: rc {init|start|stop} [list of daemons]'
+    echo
+    echo 'rc (without arguments) lists all daemons and their status'
+    echo 'rc init is supposed to be used in the inittab on boot'
+    echo 'rc start daemon1 daemon2... starts up daemons'
+    echo 'rc stop daemon1 daemon2... stops up daemons'
+    exit
+elif [ "$1" == --version ]; then
+    echo minit 0.1
+    exit
+elif [ "$1" == init ]; then
+    on_boot
 elif [ "$1" == start ]; then
-    #===================
-    # start individual daemons
     shift
     for dmn in "$@"; do
-        echo_color 2 starting "$dmn"...
-        start_"$dmn";
+        start_process "$dmn";
     done
 elif [ "$1" == stop ]; then
-    #===================
-    # stop individual daemons
     shift
     for dmn in "$@"; do
-        echo_color 1 stopping "$dmn"...
-        stop_"$dmn";
+        stop_process "$dmn";
     done
 else
-    #===================
     # list all daemons and their status
     for dmn in $all_daemons; do
-        if test_ANY "$dmn" >& /dev/null; then
+        if poll_process "$dmn" >& /dev/null; then
             echo_color 2 [X] $dmn
         else
             echo_color 0 [ ] $dmn
