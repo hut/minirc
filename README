@@ -1,0 +1,85 @@
+minit - minimalistic init script
+================================
+
+The script "rc" is a minimalistic init script made for use with busybox init.
+It starts up udev, sets the hostname, mounts the file systems and starts the
+daemons and so on.
+
+Later, in the user space, you can use it to list currently running daemons and
+individually start or stop them.
+
+It was developed for arch linux to get rid of systemd, but it can probably run
+on other distributions as well.
+
+
+A word of warning
+-----------------
+
+This works on my machine^TM.  You absolutely need read and understand what it
+does before using it.  Compare it to your existing init script and see if there
+is something you need to add (for example, setting time zone, mounting
+encrypted non-root file systems and many other things are simply not handled.)
+
+Also, get a rescue system ready because things will break if you don't know
+what you're doing.
+
+
+Installing
+----------
+
+Dependencies: busybox, udev
+
+
+1. Busybox runs different programs depending on how you call busybox.  In order
+to run "busybox init", you need to call it init, by creating a symlink like this:
+
+ln -s /bin/busybox /root/init
+
+2. Set the kernel-parameter to change the init script:
+
+init=/root/init
+
+Where you have to write it depends on your boot loader.  You should know your
+system better than me.
+
+3. Use an /etc/inittab that is compatible with busybox init and add the
+rc-script to the "sysinit" action.  An example inittab is provided in this
+repository, another one with the source code of busybox.
+
+::sysinit:/path/to/minit/rc
+
+4. Read the rc-script.  Read the rc-script.  Read the rc-script.
+
+
+Dealing with services
+---------------------
+
+The variable ALL_DAEMONS contains a space-separated list of services that minit
+lists when you ask which services currently run.
+
+The variable DEFAULT_DAEMONS contains a space-separated list of services that
+are started on boot.  By default, the two are identical.
+
+To add another service, simply add it to the respective variable.  If you don't
+specify anything else -- and this is indeed enough for most services -- minit
+has certain standard behaviours for starting, stopping and polling a service
+with the name $service:
+
+1. rc start $service          -> execute "$service"
+2. rc stop $service           -> execute "killall $service"
+3. determine if $service runs -> execute "pgrep $service"
+
+For some services, such as iptables, this obviously doesn't work.  For those,
+there are individual entries in the functions "start_process", "stop_process"
+and "poll_process".
+
+
+About
+-----
+
+Author: Roman Zimbelmann
+License: GPL2
+
+Parts of the function on_boot() and the start/stop function of iptables were
+taken from archlinux initscripts (http://www.archlinux.org).  I was unable to
+determine the author or authors of those parts.
