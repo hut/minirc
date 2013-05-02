@@ -1,8 +1,8 @@
 #!/bin/bash
 #===================
 # define daemons
-all_daemons="syslog-ng iptables crond dhcpcd sshd privoxy acpid mpd"
-default_daemons="$all_daemons"
+ALL_DAEMONS="syslog-ng iptables crond dhcpcd sshd privoxy acpid mpd"
+DEFAULT_DAEMONS="$ALL_DAEMONS"
 
 on_boot() {
     #===================
@@ -43,7 +43,7 @@ on_boot() {
     #===================
     # start the default daemons
     echo_color 3 starting daemons...
-    for dmn in $default_daemons; do
+    for dmn in $DEFAULT_DAEMONS; do
         start_process "$dmn"
     done
 }
@@ -123,7 +123,7 @@ elif [ "$1" == stop ]; then
     done
 else
     # list all daemons and their status
-    for dmn in $all_daemons; do
+    for dmn in $ALL_DAEMONS; do
         if poll_process "$dmn" >& /dev/null; then
             echo_color 2 [X] $dmn
         else
