@@ -98,18 +98,7 @@ echo_color () {
   echo -e "[1;3${color}m$@[0m"
 }
 
-if [ "$1" == -h -o "$1" == --help ]; then
-    echo 'usage: rc {init|start|stop} [list of daemons]'
-    echo
-    echo 'rc (without arguments) lists all daemons and their status'
-    echo 'rc init is supposed to be used in the inittab on boot'
-    echo 'rc start daemon1 daemon2... starts up daemons'
-    echo 'rc stop daemon1 daemon2... stops up daemons'
-    exit
-elif [ "$1" == --version ]; then
-    echo minit 0.1
-    exit
-elif [ "$1" == init ]; then
+if [ "$1" == init ]; then
     on_boot
 elif [ "$1" == start ]; then
     shift
@@ -121,7 +110,7 @@ elif [ "$1" == stop ]; then
     for dmn in "$@"; do
         stop_process "$dmn";
     done
-else
+elif [ -z "$1" ]; then
     # list all daemons and their status
     for dmn in $ALL_DAEMONS; do
         if poll_process "$dmn" >& /dev/null; then
@@ -130,4 +119,14 @@ else
             echo_color 0 [ ] $dmn
         fi
     done
+elif [ "$1" == --version ]; then
+    echo minit 0.1
+    exit
+else
+    echo 'usage: rc {init|start|stop} [list of daemons]'
+    echo
+    echo 'rc (without arguments) lists all daemons and their status'
+    echo 'rc init is supposed to be used in the inittab on boot'
+    echo 'rc start daemon1 daemon2... starts up daemons'
+    echo 'rc stop daemon1 daemon2... stops up daemons'
 fi
