@@ -56,10 +56,9 @@ start_process() {
     sshd)
         /usr/sbin/sshd;;  # requires an absolute path
     privoxy)
-        /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config
-        ;;
+        /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config;;
     dhcpcd)
-        /etc/rc.d/network start;;
+        /usr/sbin/dhcpcd -qb eth0;;
     *)
         # fallback: start the command
         "$1";;
@@ -74,8 +73,6 @@ stop_process() {
             iptables-restore < /var/lib/iptables/empty-$table.rules
         done
         ;;
-    dhcpcd)
-        /etc/rc.d/network stop;;
     *)
         # fallback: kill all processes with the name of the command
         killall "$1";;
