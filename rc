@@ -4,6 +4,9 @@
 ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd"
 DEFAULT_DAEMONS="$ALL_DAEMONS"
 
+# /etc/minit.conf gives you a chance to override the daemon variables
+test -f /etc/minit.conf && source /etc/minit.conf
+
 on_boot() {
     #===================
     # mount the API filesystem
