@@ -82,8 +82,7 @@ stop_process() {
 poll_process() {
     case "$1" in
     iptables)
-        # really crude
-        test $(iptables -L | wc -l) -gt 10;;
+        iptables -L | grep -m 1 -q '^ACCEPT\|^REJECT';;
     *)
         # fallback: check if any processes of that name are running
         pgrep "$1" >& /dev/null;;
