@@ -52,10 +52,13 @@ KEEP A BACKUP OF THE OLD /etc/inittab IN CASE YOU WANT TO GO BACK
 
 4. Read the rc-script.  Read the rc-script.  Read the rc-script.
 
+5. Reboot
+
 
 NOTE: If you want to be fancy and want the init process to be called "busybox"
 instead of "init", you can compile busybox.c with "gcc busybox.c -o busybox"
 and use that binary for the init kernel parameter instead.
+
 
 Dealing with services
 ---------------------
@@ -78,6 +81,14 @@ with the name $service:
 For some services, such as iptables, this obviously doesn't work.  For those,
 there are individual entries in the functions "start_process", "stop_process"
 and "poll_process".
+
+
+Usage of the user space program
+-------------------------------
+
+Copy the rc-script to some place in your $PATH.  Then run "rc --help".  You
+should probably *not* use "rc init" except during the boot process, when called
+by busybox init.
 
 
 About
