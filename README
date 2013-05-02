@@ -15,9 +15,9 @@ on other distributions as well.
 A word of warning
 -----------------
 
-This works on my machine^TM.  You absolutely need read and understand what it
-does before using it.  Compare it to your existing init script and see if there
-is something you need to add (for example, setting time zone, mounting
+This works on my machine^TM.  You absolutely need to read and understand what
+it does before using it.  Compare it to your existing init script and see if
+there is something you need to add (for example, setting time zone, mounting
 encrypted non-root file systems and many other things are simply not handled.)
 
 Also, get a rescue system ready because things will break if you don't know
