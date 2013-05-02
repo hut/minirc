@@ -51,6 +51,10 @@ repository, another one with the source code of busybox.
 4. Read the rc-script.  Read the rc-script.  Read the rc-script.
 
 
+NOTE: If you want to be fancy and want the init process to be called "busybox"
+instead of "init", you can compile busybox.c with "gcc busybox.c -o busybox"
+and use that binary for the init kernel parameter instead.
+
 Dealing with services
 ---------------------
 
