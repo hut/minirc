@@ -103,13 +103,15 @@ init)
     on_boot;;
 start)
     shift
-    for dmn in "$@"; do
-        start_process "$dmn";
+    [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
+    for dmn in $which; do
+        start_process "$dmn"
     done;;
 stop)
     shift
-    for dmn in "$@"; do
-        stop_process "$dmn";
+    [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
+    for dmn in $which; do
+        stop_process "$dmn"
     done;;
 ''|list)
     # list all daemons and their status
