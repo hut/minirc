@@ -98,19 +98,20 @@ echo_color() {
 
 #===================
 # handle arguments
-if [ "$1" == init ]; then
-    on_boot
-elif [ "$1" == start ]; then
+case "$1" in
+init)
+    on_boot;;
+start)
     shift
     for dmn in "$@"; do
         start_process "$dmn";
-    done
-elif [ "$1" == stop ]; then
+    done;;
+stop)
     shift
     for dmn in "$@"; do
         stop_process "$dmn";
-    done
-elif [ -z "$1" ]; then
+    done;;
+''|list)
     # list all daemons and their status
     for dmn in $ALL_DAEMONS; do
         if poll_process "$dmn" >& /dev/null; then
@@ -118,15 +119,17 @@ elif [ -z "$1" ]; then
         else
             echo_color 0 [ ] $dmn
         fi
-    done
-elif [ "$1" == --version ]; then
+    done;;
+--version)
     echo minit 0.1
-    exit
-else
-    echo 'usage: rc {init|start|stop} [list of daemons]'
+    exit;;
+*)
+    echo 'usage: rc [--help] [--version] <action> [list of daemons]'
     echo
-    echo 'rc (without arguments) lists all daemons and their status'
-    echo 'rc init is supposed to be used in the inittab on boot'
-    echo 'rc start daemon1 daemon2... starts up daemons'
-    echo 'rc stop daemon1 daemon2... stops up daemons'
-fi
+    echo 'Actions:'
+    echo '  rc list   shows status of all daemons (default action)'
+    echo '  rc init   initialize the system (use in /etc/inittab only!)'
+    echo '  rc start daemon1 daemon2...  starts up daemons'
+    echo '  rc stop daemon1 daemon2...   stops up daemons'
+    ;;
+esac
