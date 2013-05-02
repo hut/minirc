@@ -48,6 +48,8 @@ repository, another one with the source code of busybox.
 
 ::sysinit:/path/to/minit/rc
 
+KEEP A BACKUP OF THE OLD /etc/inittab IN CASE YOU WANT TO GO BACK
+
 4. Read the rc-script.  Read the rc-script.  Read the rc-script.
 
 
