@@ -52,9 +52,7 @@ start_process() {
     echo_color 2 starting "$1"...
     case "$1" in
     iptables)
-        IPTABLES_CONF=/etc/iptables/iptables.rules
-        /usr/sbin/iptables-restore < $IPTABLES_CONF
-        ;;
+        /usr/sbin/iptables-restore < /etc/iptables/iptables.rules;;
     sshd)
         /usr/sbin/sshd;;  # requires an absolute path
     privoxy)
