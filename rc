@@ -63,6 +63,7 @@ start_process() {
     dhcpcd)
         /etc/rc.d/network start;;
     *)
+        # fallback: start the command
         "$1";;
     esac
 }
@@ -78,6 +79,7 @@ stop_process() {
     dhcpcd)
         /etc/rc.d/network stop;;
     *)
+        # fallback: kill all processes with the name of the command
         killall "$1";;
     esac
 }
@@ -88,16 +90,20 @@ poll_process() {
         # really crude
         test $(iptables -L | wc -l) -gt 10;;
     *)
+        # fallback: check if any processes of that name are running
         pgrep "$1" >& /dev/null;;
     esac
 }
 
-echo_color () {
+echo_color() {
   color=$1
   shift
   echo -e "[1;3${color}m$@[0m"
 }
 
+
+#===================
+# handle arguments
 if [ "$1" == init ]; then
     on_boot
 elif [ "$1" == start ]; then
