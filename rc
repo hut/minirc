@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #===================
 # define daemons
 ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd"
