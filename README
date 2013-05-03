@@ -1,5 +1,5 @@
-minit - minimalistic init script
-================================
+minirc - minimalistic rc script
+===============================
 
 The script "rc" is a minimalistic init script made for use with busybox init.
 It starts up udev, sets the hostname, mounts the file systems and starts the
@@ -46,7 +46,7 @@ system better than me.
 rc-script to the "sysinit" action.  An example inittab is provided in this
 repository, another one with the source code of busybox.
 
-::sysinit:/path/to/minit/rc
+::sysinit:/path/to/minirc/rc
 
 KEEP A BACKUP OF THE OLD /etc/inittab IN CASE YOU WANT TO GO BACK
 
@@ -63,14 +63,14 @@ and use that binary for the init kernel parameter instead.
 Dealing with services
 ---------------------
 
-The variable ALL_DAEMONS contains a space-separated list of services that minit
-lists when you ask which services currently run.
+The variable ALL_DAEMONS contains a space-separated list of services that
+minirc lists when you ask which services currently run.
 
 The variable DEFAULT_DAEMONS contains a space-separated list of services that
 are started on boot.  By default, the two are identical.
 
 To add another service, simply add it to the respective variable.  If you don't
-specify anything else -- and this is indeed enough for most services -- minit
+specify anything else -- and this is indeed enough for most services -- minirc
 has certain standard behaviours for starting, stopping and polling a service
 with the name $service:
 

@@ -4,8 +4,8 @@
 ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd"
 DEFAULT_DAEMONS="$ALL_DAEMONS"
 
-# /etc/minit.conf gives you a chance to override the daemon variables
-test -f /etc/minit.conf && source /etc/minit.conf
+# /etc/minirc.conf gives you a chance to override the daemon variables
+test -f /etc/minirc.conf && source /etc/minirc.conf
 
 on_boot() {
     #===================
@@ -140,7 +140,7 @@ stop)
         fi
     done;;
 --version)
-    echo minit 0.1
+    echo minirc 0.1
     exit;;
 *)
     echo 'usage: rc [--help] [--version] <action> [list of daemons]'

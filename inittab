@@ -1,4 +1,4 @@
-::sysinit:/path/to/minit/rc init
+::sysinit:/path/to/minirc/rc init
 tty1::respawn:/sbin/agetty -8 -s 38400 tty1 linux
 tty2::respawn:/sbin/agetty -8 -s 38400 tty2 linux
 tty3::respawn:/sbin/agetty -8 -s 38400 tty3 linux
