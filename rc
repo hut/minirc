@@ -1,7 +1,7 @@
 #!/bin/sh
 #===================
 # define daemons
-ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd"
+ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
 DEFAULT_DAEMONS="$ALL_DAEMONS"
 
 # /etc/minirc.conf gives you a chance to override the daemon variables
@@ -70,6 +70,8 @@ start_process() {
         /usr/sbin/vsftpd &;;
     lighttpd)
         /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf;;
+    ntpd)
+        /usr/bin/ntpd -g -u ntp;;
     *)
         # fallback: start the command
         "$1";;
