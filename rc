@@ -82,7 +82,8 @@ stop_process() {
     alsa)
         alsactl store;;
     dbus)
-        killall dbus-launch;;
+        killall dbus-launch
+        killall dbus-daemon;;
     iptables)
         for table in $(cat /proc/net/ip_tables_names); do
             iptables-restore < /var/lib/iptables/empty-$table.rules
