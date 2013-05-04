@@ -136,7 +136,8 @@ restart)
     shift
     [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
     for dmn in $which; do
-        stop_process "$dmn" && start_process "$dmn"
+        stop_process "$dmn"
+        start_process "$dmn"
     done;;
 ''|list)
     # list all daemons and their status
