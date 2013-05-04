@@ -169,8 +169,7 @@ restart)
         fi
     done;;
 --version)
-    echo minirc 0.1
-    exit;;
+    echo minirc 0.1;;
 *)
     usage;;
 esac
