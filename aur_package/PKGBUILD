@@ -29,7 +29,7 @@ package() {
   cd "${_gitname}"
   install -Dm755 rc "${pkgdir}/sbin/rc"
   install -Dm644 inittab "${pkgdir}/etc/inittab"
-  install -Dm644 "_${_gitname}" "${pkgdir}/usr/share/zsh/site-functions/${_gitname}"
+  install -Dm644 "aur_package/_${_gitname}" "${pkgdir}/usr/share/zsh/site-functions/${_gitname}"
 }
 
 # vim:set ts=2 sw=2 et:
