@@ -5,8 +5,8 @@ ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vs
 DEFAULT_DAEMONS="$ALL_DAEMONS"
 
 # Choose the udev implementation
-UDEV="systemd"
-#UDEV="busybox"
+#UDEV="systemd"
+UDEV="busybox"
 
 # /etc/minirc.conf gives you a chance to override the daemon variables
 test -f /etc/minirc.conf && source /etc/minirc.conf
