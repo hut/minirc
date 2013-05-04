@@ -11,6 +11,18 @@ UDEV="busybox"
 # /etc/minirc.conf gives you a chance to override the daemon variables
 test -f /etc/minirc.conf && source /etc/minirc.conf
 
+self="$(basename $0)"
+usage() {
+    echo "Usage: $self [--help] [--version] <action> [list of daemons]"
+    echo
+    echo "Actions:"
+    echo "   $self list     shows status of all daemons (default action)"
+    echo "   $self init     initialize the system (use in /etc/inittab only!)"
+    echo "   $self start    starts daemons"
+    echo "   $self stop     stops daemons"
+    echo "   $self restart  restarts daemons"
+}
+
 on_boot() {
     #===================
     # mount the API filesystem
@@ -160,12 +172,5 @@ restart)
     echo minirc 0.1
     exit;;
 *)
-    echo 'usage: rc [--help] [--version] <action> [list of daemons]'
-    echo
-    echo 'Actions:'
-    echo '  rc list   shows status of all daemons (default action)'
-    echo '  rc init   initialize the system (use in /etc/inittab only!)'
-    echo '  rc start daemon1 daemon2...  starts up daemons'
-    echo '  rc stop daemon1 daemon2...   stops up daemons'
-    ;;
+    usage;;
 esac
