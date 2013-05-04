@@ -27,37 +27,36 @@ what you're doing.
 Installing
 ----------
 
-Dependencies: busybox, udev
+Dependencies: busybox, optionally systemd (for udev)
 
+NOTE: Keep backups of files like /sbin/init or /etc/inittab if you want to
+revert the changes.
 
 1. Busybox runs different programs depending on how you call busybox.  In order
 to run "busybox init", you need to call it init, by creating a symlink like this:
 
-ln -s /bin/busybox /root/init
+ln -s /bin/busybox /sbin/init
 
-2. Set the kernel-parameter to change the init script:
+2. If there is any "init=..." in your kernel parameters, remove it, since it
+defaults to /sbin/init.  If you chose another name than /sbin/init, add this to
+the kernel parameters:
 
-init=/root/init
+init=/path/to/your/init
 
-Where you have to write it depends on your boot loader.  You should know your
-system better than me.
+Check the docs of your boot loader on how to change the kernel parameters.
 
-3. Use an /etc/inittab that is compatible with busybox init and add the
+3. Copy or link the rc-script to /sbin/rc
+
+4. Use an /etc/inittab that is compatible with busybox init and add the
 rc-script to the "sysinit" action.  An example inittab is provided in this
 repository, another one with the source code of busybox.
 
-::sysinit:/path/to/minirc/rc
+::sysinit:/sbin/rc
 
-KEEP A BACKUP OF THE OLD /etc/inittab IN CASE YOU WANT TO GO BACK
+5. Configure /sbin/rc according to your likings.  See sections "Dealing with
+services" and "Further configuration".
 
-4. Read the rc-script.  Read the rc-script.  Read the rc-script.
-
-5. Reboot
-
-
-NOTE: If you want to be fancy and want the init process to be called "busybox"
-instead of "init", you can compile busybox.c with "gcc busybox.c -o busybox"
-and use that binary for the init kernel parameter instead.
+6. Reboot
 
 
 Shutdown & Reboot
@@ -95,6 +94,20 @@ with the name $service:
 For some services, such as iptables, this obviously doesn't work.  For those,
 there are individual entries in the functions "start_process", "stop_process"
 and "poll_process".
+
+
+Further configuration
+---------------------
+
+1. udev
+
+You need to decide what to use to set up the devices and load the modules.
+minirc supports busybox's mdev and systemd's udev by default.  You can change
+the udev system by writing UDEV=systemd or UDEV=busybox respectively into
+/etc/minirc.conf.
+
+systemd's udev works out of the box, so it's recommended.  To set up mdev, you
+can use this as a reference: https://github.com/slashbeast/mdev-like-a-boss
 
 
 Usage of the user space program
