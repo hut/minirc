@@ -1,0 +1,43 @@
+# Maintainer: Sam Stuewe <halosghost at archlinux dot info>
+_gitname=minirc
+pkgname="${_gitname}-git"
+pkgver=31.14c4d57
+pkgrel=1
+pkgdesc="A minimalist init system using busybox"
+arch=('any')
+url="https://github.com/hut/${pkgname//-/.}/"
+license=('GPLv2')
+conflicts=('systemd-sysvcompat')
+depends=('busybox' 'udev')
+makedepends=('git')
+install="${_gitname}.install"
+source=("${_gitname}::git://github.com/hut/${pkgname//-/.}"
+        "${install}")
+sha256sums=('SKIP'
+            '999d5bf5333ba3305dcc98ed73e9120a5ce5273c65bef055ff9f8e0536868b35')
+backup=('etc/inittab')
+
+pkgver() {
+  cd "${_gitname}"
+  echo "$(git rev-list --count HEAD).$(git describe --always )"
+}
+
+prepare() {
+  cd "${_gitname}"
+  sed -e 's|/rc|/rc.d|g' -i inittab
+}
+
+build() {
+  cd "${_gitname}"
+  gcc busybox.c -o busybox
+}
+
+package() {
+  cd "${_gitname}"
+  install -Dm755 busybox "${pkgdir}/usr/lib/${_gitname}/busybox"
+  install -Dm755 rc "${pkgdir}/sbin/rc.d"
+
+  install -Dm644 inittab "${pkgdir}/etc/inittab"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,19 @@
+#!/bin/sh
+post_install(){
+    echo "==> Linking minirc to init"
+    ln -s /usr/lib/minirc/busybox /root/init
+    echo "==> Linking power functions to busybox"
+    for i in halt poweroff reboot; do
+        ln -sf $(which busybox) /sbin/$i
+    done
+    echo ":: Append 'init=/root/init' to your kernel line in your bootloader"
+    echo "   to replace your current init with minirc"
+}
+
+post_remove(){
+    echo "==> Clean up links"
+    rm /root/init
+    for i in halt poweroff reboot; do
+        rm /sbin/$i
+    done
+}
