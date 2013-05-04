@@ -22,15 +22,9 @@ pkgver() {
   echo "$(git rev-list --count HEAD).$(git describe --always )"
 }
 
-prepare() {
-  cd "${_gitname}"
-  sed -e 's|/rc|/rc.d|g' -i inittab
-}
-
 package() {
   cd "${_gitname}"
-  install -Dm755 rc "${pkgdir}/sbin/rc.d"
-
+  install -Dm755 rc "${pkgdir}/sbin/rc"
   install -Dm644 inittab "${pkgdir}/etc/inittab"
 }
 
