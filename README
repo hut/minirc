@@ -60,6 +60,17 @@ instead of "init", you can compile busybox.c with "gcc busybox.c -o busybox"
 and use that binary for the init kernel parameter instead.
 
 
+Shutdown & Reboot
+-----------------
+
+You need to use busybox's version of the reboot command by either typing in
+"busybox reboot" or by linking busybox to /bin/reboot and executing it.
+The same goes for "halt" and "poweroff".
+
+You can alternatively send the signals TERM for reboot, USR1 for halt or USR2
+for poweroff to the process 1.
+
+
 Dealing with services
 ---------------------
 

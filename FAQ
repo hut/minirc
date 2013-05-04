@@ -1,2 +1,2 @@
 Q: How do I shutdown my system?
-A: as root, run: kill -USR2 1
+A: as root, run: busybox poweroff
