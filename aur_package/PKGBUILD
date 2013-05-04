@@ -15,7 +15,7 @@ install="${_gitname}.install"
 source=("${_gitname}::git://github.com/hut/${pkgname//-/.}"
         "${install}")
 sha256sums=('SKIP'
-            'acc4346dc4a9ad7cd02b87bb206d4af205291fe532c0b2a8a585e8d7b3c7a6ee')
+            'd94084b72d7777a881a7aa0b96da5a177bc15edc6c8b512ac8e72d7149226faa')
 backup=('etc/inittab')
 
 pkgver() {
