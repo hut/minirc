@@ -15,6 +15,7 @@ source=("${_gitname}::git://github.com/hut/${pkgname//-/.}"
         "${install}")
 sha256sums=('SKIP'
             '999d5bf5333ba3305dcc98ed73e9120a5ce5273c65bef055ff9f8e0536868b35')
+backup=('etc/inittab')
 
 pkgver() {
   cd "${_gitname}"
