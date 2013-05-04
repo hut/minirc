@@ -13,8 +13,10 @@ optdepends=('systemd: udev support')
 makedepends=('git')
 install="${_gitname}.install"
 source=("${_gitname}::git://github.com/hut/${pkgname//-/.}"
+        "_${_gitname}"
         "${install}")
 sha256sums=('SKIP'
+            '35d4be067c2e15acd53f0b9d91f2d69287aed027b465bd0a35872e67f17f33e8'
             '6d57d114694aefdec31f7e5e6f7aa5231afdc93c6d24c00c0464e399bf0a0173')
 backup=('etc/inittab')
 
@@ -27,6 +29,7 @@ package() {
   cd "${_gitname}"
   install -Dm755 rc "${pkgdir}/sbin/rc"
   install -Dm644 inittab "${pkgdir}/etc/inittab"
+  install -Dm644 "_${_gitname}" "${pkgdir}/usr/share/zsh/site-functions/${_gitname}"
 }
 
 # vim:set ts=2 sw=2 et:
