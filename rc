@@ -1,10 +1,10 @@
 #!/bin/sh
 #===================
-# define daemons
-ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
-DEFAULT_DAEMONS="$ALL_DAEMONS"
+# define paenguins
+ALL_PAENGUINS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
+DEFAULT_PAENGUINS="$ALL_PAENGUINS"
 
-# /etc/minirc.conf gives you a chance to override the daemon variables
+# /etc/minirc.conf gives you a chance to override the paenguin variables
 test -f /etc/minirc.conf && source /etc/minirc.conf
 
 on_boot() {
@@ -44,10 +44,10 @@ on_boot() {
     source /etc/rc.local
     
     #===================
-    # start the default daemons
-    echo_color 3 starting daemons...
-    for dmn in $DEFAULT_DAEMONS; do
-        start_process "$dmn"
+    # start the default paenguins
+    echo_color 3 starting paenguins...
+    for pngwn in $DEFAULT_PAENGUINS; do
+        start_process "$pngwn"
     done
 }
 
@@ -122,23 +122,23 @@ init)
     on_boot;;
 start)
     shift
-    [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
-    for dmn in $which; do
-        start_process "$dmn"
+    [ -n "$1" ] && which="$@" || which="$ALL_PAENGUINS"
+    for pngwn in $which; do
+        start_process "$pngwn"
     done;;
 stop)
     shift
-    [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
-    for dmn in $which; do
-        stop_process "$dmn"
+    [ -n "$1" ] && which="$@" || which="$ALL_PAENGUINS"
+    for pngwn in $which; do
+        stop_process "$pngwn"
     done;;
 ''|list)
     # list all daemons and their status
-    for dmn in $ALL_DAEMONS; do
-        if poll_process "$dmn" >& /dev/null; then
-            echo_color 2 [X] $dmn
+    for pngwn in $ALL_PAENGUINS; do
+        if poll_process "$pngwn" >& /dev/null; then
+            echo_color 2 [X] "$pngwn"
         else
-            echo_color 0 [ ] $dmn
+            echo_color 0 [ ] "$pngwn"
         fi
     done;;
 --version)
