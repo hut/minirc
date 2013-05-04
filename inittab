@@ -1,8 +1,24 @@
-::sysinit:/path/to/minirc/rc init
+# This is an example /etc/inittab file for "busybox init" which starts
+# minirc on boot, creates TTY's and handles the killing of services on
+# shutdown.
+#
+# NOTE: you have to replace /sbin/rc in this file with whatever path
+# you placed the rc-script at.
+
+# Start "rc init" on boot
+::sysinit:/sbin/rc init
+
+# Set up the TTY's 1 through 4
 tty1::respawn:/sbin/agetty -8 -s 38400 tty1 linux
 tty2::respawn:/sbin/agetty -8 -s 38400 tty2 linux
 tty3::respawn:/sbin/agetty -8 -s 38400 tty3 linux
 tty4::respawn:/sbin/agetty -8 -s 38400 tty4 linux
-#::ctrlaltdel:/sbin/reboot
-#::restart:/usr/sbin/init
+
+# Shutdown when pressing CTRL+ALT+DEL (disabled by default)
+#::ctrlaltdel:/bin/kill -USR2 1
+
+# Stop all services on shutdown
+::shutdown:/sbin/rc stop
+
+# Unmount everything on shutdown
 ::shutdown:/bin/umount -a -r
