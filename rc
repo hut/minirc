@@ -4,6 +4,10 @@
 ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
 DEFAULT_DAEMONS="$ALL_DAEMONS"
 
+# Choose the udev implementation
+UDEV="systemd"
+#UDEV="busybox"
+
 # /etc/minirc.conf gives you a chance to override the daemon variables
 test -f /etc/minirc.conf && source /etc/minirc.conf
 
@@ -26,10 +30,14 @@ on_boot() {
     /usr/sbin/ip link set up dev lo
 
     echo_color 3 initializing udev...
-    #busybox mdev -s
-    /usr/bin/udevd --daemon
-    /usr/bin/udevadm trigger --action=add --type=subsystems
-    /usr/bin/udevadm trigger --action=add --type=devices
+    if [ "$UDEV" == systemd ]; then
+        /usr/bin/udevd --daemon
+        /usr/bin/udevadm trigger --action=add --type=subsystems
+        /usr/bin/udevadm trigger --action=add --type=devices
+    else # use busybox mdev as fallback:
+        busybox mdev -s
+        echo /sbin/mdev > /proc/sys/kernel/hotplug
+    fi
 
     echo_color 3 setting hostname...
     cat /etc/hostname >| /proc/sys/kernel/hostname
