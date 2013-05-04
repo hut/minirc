@@ -27,14 +27,8 @@ prepare() {
   sed -e 's|/rc|/rc.d|g' -i inittab
 }
 
-build() {
-  cd "${_gitname}"
-  gcc busybox.c -o busybox
-}
-
 package() {
   cd "${_gitname}"
-  install -Dm755 busybox "${pkgdir}/usr/lib/${_gitname}/busybox"
   install -Dm755 rc "${pkgdir}/sbin/rc.d"
 
   install -Dm644 inittab "${pkgdir}/etc/inittab"
