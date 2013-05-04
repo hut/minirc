@@ -67,7 +67,10 @@ The variable ALL_DAEMONS contains a space-separated list of services that
 minirc lists when you ask which services currently run.
 
 The variable DEFAULT_DAEMONS contains a space-separated list of services that
-are started on boot.  By default, the two are identical.
+are started on boot.
+
+By default, the two are identical.  You can override them in /etc/minirc.conf.
+It is simply sourced by the script right after defining the default variables.
 
 To add another service, simply add it to the respective variable.  If you don't
 specify anything else -- and this is indeed enough for most services -- minirc
