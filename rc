@@ -8,6 +8,9 @@ DEFAULT_DAEMONS="$ALL_DAEMONS"
 #UDEV="systemd"
 UDEV="busybox"
 
+# The device of the wired network
+NETWORK_INTERFACE=eth0
+
 # /etc/minirc.conf gives you a chance to override the daemon variables
 test -f /etc/minirc.conf && source /etc/minirc.conf
 
@@ -85,7 +88,7 @@ start_process() {
     privoxy)
         /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config;;
     dhcpcd)
-        /usr/sbin/dhcpcd -qb eth0;;
+        /usr/sbin/dhcpcd -qb "$NETWORK_INTERFACE";;
     vsftpd)
         /usr/sbin/vsftpd &;;
     lighttpd)
