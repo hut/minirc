@@ -61,7 +61,7 @@ on_boot() {
     #===================
     # load rc.local
     echo_color 3 loading /etc/rc.local...
-    source /etc/rc.local
+    test -f /etc/rc.local && source /etc/rc.local
     
     #===================
     # start the default daemons
