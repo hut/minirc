@@ -10,7 +10,5 @@ post_install(){
 
 post_remove(){
     echo "==> Clean up links"
-    for i in init halt poweroff reboot; do
-        rm /sbin/$i
-    done
+    rm -f /sbin/{init,halt,poweroff,reboot}
 }
