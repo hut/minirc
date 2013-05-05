@@ -1,18 +1,11 @@
 #!/bin/sh
 #===================
-# define daemons
-ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
-DEFAULT_DAEMONS="$ALL_DAEMONS"
-
-# Choose the udev implementation
-#UDEV="systemd"
-UDEV="busybox"
-
-# The device of the wired network
-NETWORK_INTERFACE=eth0
-
-# /etc/minirc.conf gives you a chance to override the daemon variables
-test -f /etc/minirc.conf && source /etc/minirc.conf
+# Source /etc/minirc.conf it exists; else source /usr/lib/minirc/minirc.conf
+if [[ -f /etc/minirc.conf ]]; then
+    source /etc/minirc.conf
+else
+    source /usr/lib/minirc/minirc.conf
+fi
 
 self="$(basename $0)"
 usage() {
@@ -45,11 +38,11 @@ on_boot() {
     /usr/sbin/ip link set up dev lo
 
     echo_color 3 initializing udev...
-    if [ "$UDEV" == systemd ]; then
+    if [ "$DEV" == systemd ]; then # use systemd udev
         /usr/bin/udevd --daemon
         /usr/bin/udevadm trigger --action=add --type=subsystems
         /usr/bin/udevadm trigger --action=add --type=devices
-    else # use busybox mdev as fallback:
+    else # use busybox mdev
         busybox mdev -s
         echo /sbin/mdev > /proc/sys/kernel/hotplug
     fi
@@ -69,7 +62,7 @@ on_boot() {
     #===================
     # start the default daemons
     echo_color 3 starting daemons...
-    for dmn in $DEFAULT_DAEMONS; do
+    for dmn in "$ENABLED"; do
         start_process "$dmn"
     done
 }
@@ -88,7 +81,7 @@ start_process() {
     privoxy)
         /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config;;
     dhcpcd)
-        /usr/sbin/dhcpcd -qb "$NETWORK_INTERFACE";;
+        /usr/sbin/dhcpcd -qb "$WIRED_IFACE";;
     vsftpd)
         /usr/sbin/vsftpd &;;
     lighttpd)
@@ -109,6 +102,8 @@ stop_process() {
     dbus)
         killall dbus-launch
         killall dbus-daemon;;
+    dhcpcd)
+        dhcpcd --release "$WIRED_IFACE";;
     iptables)
         for table in $(cat /proc/net/ip_tables_names); do
             iptables-restore < /var/lib/iptables/empty-$table.rules
@@ -145,26 +140,26 @@ init)
     on_boot;;
 start)
     shift
-    [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
+    [ -n "$1" ] && which="$@" || which="$DAEMONS"
     for dmn in $which; do
         start_process "$dmn"
     done;;
 stop)
     shift
-    [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
+    [ -n "$1" ] && which="$@" || which="$DAEMONS"
     for dmn in $which; do
         stop_process "$dmn"
     done;;
 restart)
     shift
-    [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
+    [ -n "$1" ] && which="$@" || which="$DAEMONS"
     for dmn in $which; do
         stop_process "$dmn"
         start_process "$dmn"
     done;;
 ''|list)
     # list all daemons and their status
-    for dmn in $ALL_DAEMONS; do
+    for dmn in "$DAEMONS"; do
         if poll_process "$dmn" >& /dev/null; then
             echo_color 2 [X] $dmn
         else
