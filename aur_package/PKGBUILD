@@ -7,7 +7,7 @@ pkgdesc="A minimalist init system using busybox"
 arch=('any')
 url="https://github.com/hut/${pkgname//-/.}/"
 license=('GPLv2')
-conflicts=('systemd-sysvcompat')
+conflicts=('systemd-sysvcompat' 'sysvinit')
 depends=('busybox')
 optdepends=('systemd: udev support')
 makedepends=('git')
@@ -25,9 +25,15 @@ pkgver() {
 
 package() {
   cd "${_gitname}"
+
+  # Install Core Components
   install -Dm755 rc "${pkgdir}/sbin/rc"
   install -Dm644 inittab "${pkgdir}/etc/inittab"
-  install -Dm644 extra/_"${_gitname}" "${pkgdir}/usr/share/zsh/site-functions/${_gitname}"
+
+  # Install Extras
+  cd extra
+  install -Dm644 _"${_gitname}" "${pkgdir}/usr/share/zsh/site-functions/_${_gitname}"
+  install -Dm755 shutdown.sh "${pkgdir}/sbin/shutdown"
 }
 
 # vim:set ts=2 sw=2 et:
