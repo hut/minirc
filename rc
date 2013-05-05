@@ -119,6 +119,8 @@ stop_process() {
     esac
 }
 
+restart_process() { stop_process "$@"; start_process "$@"; }
+
 poll_process() {
     case "$1" in
     alsa)
@@ -143,24 +145,12 @@ echo_color() {
 case "$1" in
 init)
     on_boot;;
-start)
+start|stop|restart)
+    cmd="$1"
     shift
     [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
     for dmn in $which; do
-        start_process "$dmn"
-    done;;
-stop)
-    shift
-    [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
-    for dmn in $which; do
-        stop_process "$dmn"
-    done;;
-restart)
-    shift
-    [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
-    for dmn in $which; do
-        stop_process "$dmn"
-        start_process "$dmn"
+        ${cmd}_process "$dmn"
     done;;
 ''|list)
     # list all daemons and their status
