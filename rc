@@ -148,8 +148,7 @@ init)
 start|stop|restart)
     cmd="$1"
     shift
-    [ -n "$1" ] && which="$@" || which="$ALL_DAEMONS"
-    for dmn in $which; do
+    for dmn in ${@:-$ALL_DAEMONS}; do
         ${cmd}_process "$dmn"
     done;;
 ''|list)
