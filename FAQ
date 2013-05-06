@@ -1,2 +1,6 @@
 Q: How do I shutdown my system?
 A: as root, run: busybox poweroff
+
+Q: syslog-ng doesn't work on archlinux
+A: You may need to change the path in /etc/syslog-ng/syslog-ng.conf in the
+setting unix-dgram from "/run/systemd/journal/syslog" to "/dev/log".
