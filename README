@@ -2,7 +2,7 @@ minirc - minimalistic rc script
 ===============================
 
 The script "rc" is a minimalistic init script made for use with busybox init.
-It starts up udev, sets the hostname, mounts the file systems and starts the
+It starts up udev, sets the hostname, mounts the file systems, starts the
 daemons and so on.
 
 Later, in the user space, you can use it to list currently running daemons and
@@ -29,34 +29,23 @@ Installing
 
 Dependencies: busybox, optionally systemd (for udev)
 
-NOTE: Keep backups of files like /sbin/init or /etc/inittab if you want to
-revert the changes.
+NOTE: The archlinux AUR package does step 1 for you.
 
-1. Busybox runs different programs depending on how you call busybox.  In order
-to run "busybox init", you need to call it init, by creating a symlink like this:
+1. There is a setup.sh script, but you should read it first.  If you don't use
+a package manager which does the sanity checks for you, please check for
+yourself that it doesn't break your system by overwriting essential files.
+Make backups as needed.
 
-ln -s /bin/busybox /sbin/init
+When you are confident, run "./setup.sh --force"
 
-2. If there is any "init=..." in your kernel parameters, remove it, since it
-defaults to /sbin/init.  If you chose another name than /sbin/init, add this to
-the kernel parameters:
+2. Add init=/sbin/init to your kernel parameters.  Alternatively, since
+/sbin/init is the default, you can just remove it or leave it empty.  Check the
+docs of your boot loader on how to change the kernel parameters.
 
-init=/path/to/your/init
+3. Configure /sbin/rc and /etc/minirc.conf according to your likings.
+See sections "Dealing with services" and "Further configuration".
 
-Check the docs of your boot loader on how to change the kernel parameters.
-
-3. Copy or link the rc-script to /sbin/rc
-
-4. Use an /etc/inittab that is compatible with busybox init and add the
-rc-script to the "sysinit" action.  An example inittab is provided in this
-repository, another one with the source code of busybox.
-
-::sysinit:/sbin/rc
-
-5. Configure /sbin/rc according to your likings.  See sections "Dealing with
-services" and "Further configuration".
-
-6. Reboot
+4. Reboot
 
 
 Shutdown & Reboot
@@ -113,15 +102,14 @@ can use this as a reference: https://github.com/slashbeast/mdev-like-a-boss
 Usage of the user space program
 -------------------------------
 
-Copy the rc-script to some place in your $PATH.  Then run "rc --help".  You
-should probably *not* use "rc init" except during the boot process, when called
-by busybox init.
+Run "rc --help" for information.  Never run "rc init" except during the boot
+process, when called by busybox init.
 
 
 About
 -----
 
-Author: Roman Zimbelmann
+Authors: Roman Zimbelmann, Sam Stuewe
 License: GPL2
 
 Parts of the function on_boot() and the start/stop function of iptables were
