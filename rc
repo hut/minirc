@@ -2,7 +2,7 @@
 #===================
 # define daemons
 ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
-DEFAULT_DAEMONS="$ALL_DAEMONS"
+DEFAULT_DAEMONS="API_FS LOOPBACK UDEV HOSTNAME FSTAB RCLOCAL $ALL_DAEMONS"
 
 # Choose the udev implementation
 #UDEV="systemd"
@@ -30,56 +30,43 @@ usage() {
 }
 
 on_boot() {
-    #===================
-    # mount the API filesystem
-    # /proc, /sys, /run, /dev, /run/lock, /dev/pts, /dev/shm
-    echo_color 3 mounting API filesystem...
-    mountpoint -q /proc    || mount -t proc proc /proc -o nosuid,noexec,nodev
-    mountpoint -q /sys     || mount -t sysfs sys /sys -o nosuid,noexec,nodev
-    mountpoint -q /run     || mount -t tmpfs run /run -o mode=0755,nosuid,nodev
-    mountpoint -q /dev     || mount -t devtmpfs dev /dev -o mode=0755,nosuid
-    mkdir -p /dev/{pts,shm}
-    mountpoint -q /dev/pts || mount -t devpts devpts /dev/pts -o mode=0620,gid=5,nosuid,noexec
-    mountpoint -q /dev/shm || mount -t tmpfs shm /dev/shm -o mode=1777,nosuid,nodev
-
-    #===================
-    # initialize system
-    echo_color 3 setting up loopback device...
-    /usr/sbin/ip link set up dev lo
-
-    echo_color 3 initializing udev...
-    if [ "$UDEV" == systemd ]; then
-        /usr/bin/udevd --daemon
-        /usr/bin/udevadm trigger --action=add --type=subsystems
-        /usr/bin/udevadm trigger --action=add --type=devices
-    else # use busybox mdev as fallback:
-        busybox mdev -s
-        echo /sbin/mdev > /proc/sys/kernel/hotplug
-    fi
-
-    echo_color 3 setting hostname...
-    cat /etc/hostname >| /proc/sys/kernel/hostname
-
-    echo_color 3 mounting...
-    mount -a
-    mount -o remount,rw /
-
-    #===================
-    # load rc.local
-    echo_color 3 loading /etc/rc.local...
-    test -f /etc/rc.local && source /etc/rc.local
-    
-    #===================
-    # start the default daemons
     echo_color 3 starting daemons...
     for dmn in $DEFAULT_DAEMONS; do
         start_process "$dmn"
     done
+    echo_color 3 system ready\!
 }
 
 start_process() {
     echo_color 2 starting "$1"...
     case "$1" in
+    API_FS)
+        # mount the API filesystem
+        # /proc, /sys, /run, /dev, /run/lock, /dev/pts, /dev/shm
+        mountpoint -q /proc    || mount -t proc proc /proc -o nosuid,noexec,nodev
+        mountpoint -q /sys     || mount -t sysfs sys /sys -o nosuid,noexec,nodev
+        mountpoint -q /run     || mount -t tmpfs run /run -o mode=0755,nosuid,nodev
+        mountpoint -q /dev     || mount -t devtmpfs dev /dev -o mode=0755,nosuid
+        mkdir -p /dev/{pts,shm}
+        mountpoint -q /dev/pts || mount -t devpts devpts /dev/pts -o mode=0620,gid=5,nosuid,noexec
+        mountpoint -q /dev/shm || mount -t tmpfs shm /dev/shm -o mode=1777,nosuid,nodev
+        ;;
+    LOOPBACK)
+        /usr/sbin/ip link set up dev lo;;
+    UDEV)
+        /usr/bin/udevd --daemon
+        /usr/bin/udevadm trigger --action=add --type=subsystems
+        /usr/bin/udevadm trigger --action=add --type=devices;;
+    MDEV)
+        busybox mdev -s
+        echo /sbin/mdev > /proc/sys/kernel/hotplug;;
+    HOSTNAME)
+        cat /etc/hostname >| /proc/sys/kernel/hostname;;
+    FSTAB)
+        mount -a
+        mount -o remount,rw /;;
+    RCLOCAL)
+        test -f /etc/rc.local && source /etc/rc.local;;
     alsa)
         alsactl restore;;
     bitlbee)
