@@ -90,6 +90,8 @@ start_process() {
         /usr/sbin/sshd;;  # requires an absolute path
     privoxy)
         /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config;;
+    polipo)
+        su -c '/usr/bin/polipo daemonise=true logFile="/var/log/polipo.log"' -s /bin/sh - nobody;;
     dhcpcd)
         /usr/sbin/dhcpcd -nqb;;
     vsftpd)
