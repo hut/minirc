@@ -11,6 +11,9 @@ UDEV="busybox"
 # The device of the wired network
 NETWORK_INTERFACE=eth0
 
+# The device of the wireless network
+WIFI_INTERFACE=wlan0
+
 # /etc/minirc.conf gives you a chance to override the daemon variables
 test -f /etc/minirc.conf && source /etc/minirc.conf
 
@@ -95,6 +98,8 @@ start_process() {
         /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf;;
     ntpd)
         /usr/bin/ntpd -g -u ntp;;
+    wpa_supplicant)
+        /usr/sbin/wpa_supplicant -Dwext -B -i"$WIFI_INTERFACE" -c/etc/wpa_supplicant.conf;;
     *)
         # fallback: start the command
         "$1";;
