@@ -88,7 +88,7 @@ start_process() {
     privoxy)
         /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config;;
     dhcpcd)
-        /usr/sbin/dhcpcd -qb "$NETWORK_INTERFACE";;
+        /usr/sbin/dhcpcd -nqb;;
     vsftpd)
         /usr/sbin/vsftpd &;;
     lighttpd)
