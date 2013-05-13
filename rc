@@ -82,6 +82,8 @@ start_process() {
     case "$1" in
     alsa)
         alsactl restore;;
+    bitlbee)
+        su -s /bin/sh -c '/usr/sbin/bitlbee -F' bitlbee;;
     dbus)
         dbus-launch;;
     iptables)
