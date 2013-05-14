@@ -4,11 +4,11 @@
 
 # Fallback Configuration Values, to be able to run even with a broken, deleted
 # or outdated minirc.local:
-ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
-DEFAULT_DAEMONS="$ALL_DAEMONS"
-UDEV=busybox
-NETWORK_INTERFACE=eth0
-WIFI_INTERFACE=wlan0
+ALL_DAEMONS="syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
+DEFAULT_DAEMONS="syslog-ng crond dhcpcd sshd"
+UDEV="busybox"
+NETWORK_INTERFACE="eth0"
+WIFI_INTERFACE="wlan0"
 
 # User-definable start/stop/restart/poll functions which fall back to defaults
 custom_restart() { default_restart "$@"; }

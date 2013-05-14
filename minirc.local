@@ -6,27 +6,30 @@
 # == Defining configuration variables ==
 # ======================================
 
-# define daemons
-ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
-DEFAULT_DAEMONS="$ALL_DAEMONS"
+# This is a space-separated list of all daemons which are listed to the user
+ALL_DAEMONS="syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
 
-# Choose the udev implementation
+# This is a space-separated list of daemons which are run on boot.
+DEFAULT_DAEMONS="syslog-ng crond dhcpcd sshd"
+
+# Choose the udev implementation.  The first line does auto-detection.
 [ -f /usr/lib/systemd/systemd ] && UDEV="systemd" || UDEV="busybox"
 #UDEV="systemd"
 #UDEV="busybox"
 
 # The device of the wired network
-NETWORK_INTERFACE=eth0
+NETWORK_INTERFACE="eth0"
 
 # The device of the wireless network
-WIFI_INTERFACE=wlan0
+WIFI_INTERFACE="wlan0"
 
 # ===============================================================
 # == Overriding start/stop/poll scripts for individual daemons ==
 # ===============================================================
 
 # You can define the functions custom_start, custom_stop and custom_poll here
-# to override the default_* functions in /etc/minirc.sysinit.  Examples follow.
+# to override the default_* functions in /etc/minirc.sysinit and to specify
+# custom starting parameters or add new services.  Examples follow.
 
 # custom_start <daemon_name>
 # - This function starts daemons.
@@ -34,7 +37,7 @@ WIFI_INTERFACE=wlan0
 #function custom_start {
 #    case "$1" in
 #    sshd)
-#        sshd -f /my/other/config.conf;;
+#        /usr/bin/sshd -f /my/other/config.conf;;
 #    *)
 #        default_start "$@";;  # keep the default as fall-back
 #    esac
