@@ -4,8 +4,8 @@
 
 # Fallback Configuration Values, to be able to run even with a broken, deleted
 # or outdated minirc.local:
-ALL_DAEMONS="syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
-DEFAULT_DAEMONS="syslog-ng crond dhcpcd sshd"
+DAEMONS="syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
+ENABLED="syslog-ng crond dhcpcd sshd"
 UDEV="busybox"
 NETWORK_INTERFACE="eth0"
 WIFI_INTERFACE="wlan0"
@@ -60,7 +60,7 @@ on_boot() {
     #===================
     # start the default daemons
     echo_color 3 starting daemons...
-    for dmn in $DEFAULT_DAEMONS; do
+    for dmn in $ENABLED; do
         default_start "$dmn"
     done
 }
@@ -145,12 +145,12 @@ init)
 start|stop|restart)
     cmd="$1"
     shift
-    for dmn in ${@:-$ALL_DAEMONS}; do
+    for dmn in ${@:-$DAEMONS}; do
         default_${cmd} "$dmn"
     done;;
 ''|list)
     # list all daemons and their status
-    for dmn in $ALL_DAEMONS; do
+    for dmn in $DAEMONS; do
         if default_poll "$dmn" >& /dev/null; then
             echo_color 2 [X] $dmn
         else

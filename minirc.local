@@ -7,10 +7,10 @@
 # ======================================
 
 # This is a space-separated list of all daemons which are listed to the user
-ALL_DAEMONS="syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
+DAEMONS="syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
 
 # This is a space-separated list of daemons which are run on boot.
-DEFAULT_DAEMONS="syslog-ng crond dhcpcd sshd"
+ENABLED="syslog-ng crond dhcpcd sshd"
 
 # Choose the udev implementation.  The first line does auto-detection.
 [ -f /usr/lib/systemd/systemd ] && UDEV="systemd" || UDEV="busybox"
