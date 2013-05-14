@@ -61,7 +61,7 @@ on_boot() {
     # start the default daemons
     echo_color 3 starting daemons...
     for dmn in $ENABLED; do
-        default_start "$dmn"
+        custom_start "$dmn"
     done
 }
 
@@ -116,7 +116,7 @@ default_stop() {
     esac
 }
 
-default_restart() { default_stop "$@"; default_start "$@"; }
+default_restart() { custom_stop "$@"; custom_start "$@"; }
 
 default_poll() {
     case "$1" in
@@ -146,12 +146,12 @@ start|stop|restart)
     cmd="$1"
     shift
     for dmn in ${@:-$DAEMONS}; do
-        default_${cmd} "$dmn"
+        custom_${cmd} "$dmn"
     done;;
 ''|list)
     # list all daemons and their status
     for dmn in $DAEMONS; do
-        if default_poll "$dmn" >& /dev/null; then
+        if custom_poll "$dmn" >& /dev/null; then
             echo_color 2 [X] $dmn
         else
             echo_color 0 [ ] $dmn
