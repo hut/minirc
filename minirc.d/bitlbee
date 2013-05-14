@@ -1,0 +1,12 @@
+#!/bin/sh
+case "$1" in
+start)
+    su -s /bin/sh -c '/usr/sbin/bitlbee -F' bitlbee
+    ;;
+stop)
+    killall bitlbee
+    ;;
+poll)
+    pgrep bitlbee >/dev/null
+    ;;
+esac

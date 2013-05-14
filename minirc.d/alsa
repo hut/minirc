@@ -1,0 +1,12 @@
+#!/bin/sh
+case "$1" in
+start)
+    alsactl restore
+    ;;
+stop)
+    alsactl store
+    ;;
+poll)
+    exit 0  # polling kind of doesn't make sense here...
+    ;;
+esac

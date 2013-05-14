@@ -14,6 +14,8 @@ NETWORK_INTERFACE=eth0
 # The device of the wireless network
 WIFI_INTERFACE=wlan0
 
+SCRIPT_PREFIX=/etc/minirc.d/
+
 # /etc/minirc.conf gives you a chance to override the daemon variables
 test -f /etc/minirc.conf && source /etc/minirc.conf
 
@@ -78,68 +80,36 @@ on_boot() {
 }
 
 start_process() {
-    echo_color 2 starting "$1"...
-    case "$1" in
-    alsa)
-        alsactl restore;;
-    bitlbee)
-        su -s /bin/sh -c '/usr/sbin/bitlbee -F' bitlbee;;
-    dbus)
-        dbus-launch;;
-    iptables)
-        /usr/sbin/iptables-restore < /etc/iptables/iptables.rules;;
-    sshd)
-        /usr/sbin/sshd;;  # requires an absolute path
-    privoxy)
-        /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config;;
-    polipo)
-        su -c '/usr/bin/polipo daemonise=true logFile="/var/log/polipo.log"' -s /bin/sh - nobody;;
-    dhcpcd)
-        /usr/sbin/dhcpcd -nqb;;
-    vsftpd)
-        /usr/sbin/vsftpd &;;
-    lighttpd)
-        /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf;;
-    ntpd)
-        /usr/bin/ntpd -g -u ntp;;
-    wpa_supplicant)
-        /usr/sbin/wpa_supplicant -Dwext -B -i"$WIFI_INTERFACE" -c/etc/wpa_supplicant.conf;;
-    *)
-        # fallback: start the command
-        "$1";;
-    esac
+    script="${SCRIPT_PREFIX}$1"
+    if [ -f "script" ]; then
+        echo_color 2 starting "$1" from "script"...
+        "script" start
+    elif
+        echo_color 2 starting "$1" using default method...
+        "$1"
+    fi
 }
 
 stop_process() {
-    echo_color 1 stopping "$1"...
-    case "$1" in
-    alsa)
-        alsactl store;;
-    dbus)
-        killall dbus-launch
-        killall dbus-daemon;;
-    iptables)
-        for table in $(cat /proc/net/ip_tables_names); do
-            iptables-restore < /var/lib/iptables/empty-$table.rules
-        done;;
-    *)
-        # fallback: kill all processes with the name of the command
-        killall "$1";;
-    esac
+    script="${SCRIPT_PREFIX}$1"
+    if [ -f "$script" ]; then
+        echo_color 2 stopping "$1" from "$script"...
+        "$script" stop
+    elif
+        echo_color 2 stopping "$1" using default method...
+        killall "$1"
+    fi
 }
 
 restart_process() { stop_process "$@"; start_process "$@"; }
 
 poll_process() {
-    case "$1" in
-    alsa)
-        return 0;;  # doesn't make much sense for this service
-    iptables)
-        iptables -L | grep -m 1 -q '^ACCEPT\|^REJECT';;
-    *)
-        # fallback: check if any processes of that name are running
-        pgrep "$1" >& /dev/null;;
-    esac
+    script="${SCRIPT_PREFIX}$1"
+    if [ -f "$script" ]; then
+        "$script" poll
+    elif
+        pgrep "$1" >& /dev/null
+    fi
 }
 
 echo_color() {
