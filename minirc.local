@@ -1,0 +1,14 @@
+# define daemons
+ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
+DEFAULT_DAEMONS="$ALL_DAEMONS"
+
+# Choose the udev implementation
+[ -f /usr/lib/systemd/systemd ] && UDEV="systemd" || UDEV="busybox"
+#UDEV="systemd"
+#UDEV="busybox"
+
+# The device of the wired network
+NETWORK_INTERFACE=eth0
+
+# The device of the wireless network
+WIFI_INTERFACE=wlan0

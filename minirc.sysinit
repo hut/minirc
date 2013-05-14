@@ -1,33 +1,16 @@
 #!/bin/sh
-#===================
-# define daemons
+# This file is executed on boot to initialize the system and can also be run by
+# the user to start/stop daemons.
+
+# Fallback Configuration Values, to be able to run even with a broken, deleted
+# or outdated minirc.local:
 ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
 DEFAULT_DAEMONS="$ALL_DAEMONS"
-
-# Choose the udev implementation
-#UDEV="systemd"
-UDEV="busybox"
-
-# The device of the wired network
+UDEV=busybox
 NETWORK_INTERFACE=eth0
-
-# The device of the wireless network
 WIFI_INTERFACE=wlan0
 
-# /etc/minirc.conf gives you a chance to override the daemon variables
-test -f /etc/minirc.conf && source /etc/minirc.conf
-
-self="$(basename $0)"
-usage() {
-    echo "Usage: $self [--help] [--version] <action> [list of daemons]"
-    echo
-    echo "Actions:"
-    echo "   $self list     shows status of all daemons (default action)"
-    echo "   $self init     initialize the system (use in /etc/inittab only!)"
-    echo "   $self start    starts daemons"
-    echo "   $self stop     stops daemons"
-    echo "   $self restart  restarts daemons"
-}
+source /etc/minirc.local
 
 on_boot() {
     #===================
@@ -66,9 +49,8 @@ on_boot() {
 
     #===================
     # load rc.local
-    echo_color 3 loading /etc/rc.local...
-    test -f /etc/rc.local && source /etc/rc.local
-    
+    #echo_color 3 loading /etc/minirc.local...
+
     #===================
     # start the default daemons
     echo_color 3 starting daemons...
@@ -172,5 +154,13 @@ start|stop|restart)
 --version)
     echo minirc 0.1;;
 *)
-    usage;;
+    self=$(basename "$0")
+    echo "Usage: $self [--help] [--version] <action> [list of daemons]"
+    echo
+    echo "Actions:"
+    echo "   $self list     shows status of all daemons (default action)"
+    echo "   $self init     initialize the system (use in /etc/inittab only!)"
+    echo "   $self start    starts daemons"
+    echo "   $self stop     stops daemons"
+    echo "   $self restart  restarts daemons";;
 esac

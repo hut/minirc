@@ -6,7 +6,7 @@
 # you placed the rc-script at.
 
 # Start "rc init" on boot
-::sysinit:/sbin/rc init
+::sysinit:/etc/minirc.sysinit init
 
 # Set up the TTY's 1 through 4
 tty1::respawn:/sbin/agetty -8 -s 38400 tty1 linux
@@ -18,7 +18,7 @@ tty4::respawn:/sbin/agetty -8 -s 38400 tty4 linux
 #::ctrlaltdel:/bin/kill -USR2 1
 
 # Stop all services on shutdown
-::shutdown:/sbin/rc stop
+::shutdown:/etc/minirc.sysinit stop
 
 # Unmount everything on shutdown
 ::shutdown:/bin/umount -a -r
