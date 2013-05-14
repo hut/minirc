@@ -1,3 +1,11 @@
+#!/bin/sh
+# This file is sourced by /etc/minirc.sysinit and can be used to locally change
+# configuration variables and startup functions.
+#
+# ======================================
+# == Defining configuration variables ==
+# ======================================
+
 # define daemons
 ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
 DEFAULT_DAEMONS="$ALL_DAEMONS"
@@ -12,3 +20,47 @@ NETWORK_INTERFACE=eth0
 
 # The device of the wireless network
 WIFI_INTERFACE=wlan0
+
+# ===============================================================
+# == Overriding start/stop/poll scripts for individual daemons ==
+# ===============================================================
+
+# You can define the functions custom_start, custom_stop and custom_poll here
+# to override the default_* functions in /etc/minirc.sysinit.  Examples follow.
+
+# custom_start <daemon_name>
+# - This function starts daemons.
+#
+#function custom_start {
+#    case "$1" in
+#    sshd)
+#        sshd -f /my/other/config.conf;;
+#    *)
+#        default_start "$@";;  # keep the default as fall-back
+#    esac
+#}
+
+# custom_stop <daemon_name>
+# - This function stops daemons.
+#
+#function custom_stop {
+#    case "$1" in
+#    sshd)
+#        killall sshd;;
+#    *)
+#        default_stop "$@";;  # keep the default as fall-back
+#    esac
+#}
+
+# custom_poll <daemon_name>
+# - This function checks whether daemons run or not.
+# - It returns zero if the daemon runs, nonzero if the daemon does not run.
+#
+#function custom_poll {
+#    case "$1" in
+#    sshd)
+#        pgrep sshd > /dev/null;;
+#    *)
+#        default_poll "$@";;  # keep the default as fall-back
+#    esac
+#}

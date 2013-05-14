@@ -10,6 +10,12 @@ UDEV=busybox
 NETWORK_INTERFACE=eth0
 WIFI_INTERFACE=wlan0
 
+# User-definable start/stop/restart/poll functions which fall back to defaults
+custom_restart() { default_restart "$@"; }
+custom_start()   { default_start   "$@"; }
+custom_stop()    { default_stop    "$@"; }
+custom_poll()    { default_poll    "$@"; }
+
 source /etc/minirc.local
 
 on_boot() {
@@ -55,11 +61,11 @@ on_boot() {
     # start the default daemons
     echo_color 3 starting daemons...
     for dmn in $DEFAULT_DAEMONS; do
-        start_process "$dmn"
+        default_start "$dmn"
     done
 }
 
-start_process() {
+default_start() {
     echo_color 2 starting "$1"...
     case "$1" in
     alsa)
@@ -92,7 +98,7 @@ start_process() {
     esac
 }
 
-stop_process() {
+default_stop() {
     echo_color 1 stopping "$1"...
     case "$1" in
     alsa)
@@ -110,9 +116,9 @@ stop_process() {
     esac
 }
 
-restart_process() { stop_process "$@"; start_process "$@"; }
+default_restart() { default_stop "$@"; default_start "$@"; }
 
-poll_process() {
+default_poll() {
     case "$1" in
     alsa)
         return 0;;  # doesn't make much sense for this service
@@ -140,12 +146,12 @@ start|stop|restart)
     cmd="$1"
     shift
     for dmn in ${@:-$ALL_DAEMONS}; do
-        ${cmd}_process "$dmn"
+        default_${cmd} "$dmn"
     done;;
 ''|list)
     # list all daemons and their status
     for dmn in $ALL_DAEMONS; do
-        if poll_process "$dmn" >& /dev/null; then
+        if default_poll "$dmn" >& /dev/null; then
             echo_color 2 [X] $dmn
         else
             echo_color 0 [ ] $dmn
