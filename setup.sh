@@ -6,12 +6,10 @@ fi
 
 [ -z "$ROOT" ] && ROOT=
 
-echo "==> Installing /etc/minirc.sysinit, /etc/minirc.local, /etc/inittab"
-install -Dm755 minirc.sysinit "$ROOT"/etc/minirc.sysinit
+echo "==> Installing /sbin/rc, /etc/minirc.conf, /etc/inittab"
+install -Dm755 rc "$ROOT"/sbin/rc
 install -Dm644 minirc.local "$ROOT"/etc/minirc.local
 install -Dm644 inittab "$ROOT"/etc/inittab
-echo "==> Linking /etc/minirc.sysinit to /sbin/rc"
-ln -sf "$ROOT"/etc/minirc.sysinit "$ROOT"/sbin/rc
 
 echo "==> Installing extras"
 cd extra

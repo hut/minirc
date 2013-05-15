@@ -16,7 +16,7 @@ custom_start()   { default_start   "$@"; }
 custom_stop()    { default_stop    "$@"; }
 custom_poll()    { default_poll    "$@"; }
 
-source /etc/minirc.local
+source /etc/minirc.conf
 
 on_boot() {
     #===================
