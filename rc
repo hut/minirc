@@ -55,7 +55,10 @@ on_boot() {
 
     #===================
     # load rc.local
-    #echo_color 3 loading /etc/minirc.local...
+    if [ -x /etc/minirc.local ]; then
+        echo_color 3 loading /etc/minirc.local...
+        /etc/minirc.local
+    fi
 
     #===================
     # start the default daemons
