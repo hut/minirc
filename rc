@@ -73,7 +73,11 @@ on_boot() {
     # start the default daemons
     echo_color 3 starting daemons...
     for dmn in $DEFAULT_DAEMONS; do
-        start_process "$dmn"
+        if [[ "${dmn:0:1}" == '@' ]]; then
+            start_process "${dmn:1}" &
+        else
+            start_process "$dmn"
+        fi
     done
 }
 
