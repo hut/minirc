@@ -6,8 +6,9 @@ fi
 
 [ -z "$ROOT" ] && ROOT=
 
-echo "==> Installing /sbin/rc, /etc/inittab"
+echo "==> Installing /sbin/rc, /etc/minirc.conf, /etc/inittab"
 install -Dm755 rc "$ROOT"/sbin/rc
+install -Dm644 minirc.local "$ROOT"/etc/minirc.local
 install -Dm644 inittab "$ROOT"/etc/inittab
 
 echo "==> Installing extras"
@@ -22,7 +23,5 @@ done
 
 echo ":: Append 'init=/sbin/init' to your kernel line in your bootloader"
 echo "   to replace your current init with minirc"
-echo ":: It is strongly recommended to use systemd's udev by adding"
-echo "   UDEV=systemd to /etc/minirc.conf."
 
 # Run "./setup.sh --force" to use the script

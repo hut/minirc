@@ -1,33 +1,22 @@
 #!/bin/sh
-#===================
-# define daemons
-ALL_DAEMONS="syslog-ng iptables crond dbus dhcpcd sshd alsa privoxy acpid mpd vsftpd lighttpd ntpd"
-DEFAULT_DAEMONS="$ALL_DAEMONS"
+# This file is executed on boot to initialize the system and can also be run by
+# the user to start/stop daemons.
 
-# Choose the udev implementation
-#UDEV="systemd"
+# Fallback Configuration Values, to be able to run even with a broken, deleted
+# or outdated minirc.local:
+DAEMONS="syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
+ENABLED="syslog-ng crond dhcpcd sshd"
 UDEV="busybox"
+NETWORK_INTERFACE="eth0"
+WIFI_INTERFACE="wlan0"
 
-# The device of the wired network
-NETWORK_INTERFACE=eth0
+# User-definable start/stop/restart/poll functions which fall back to defaults
+custom_restart() { default_restart "$@"; }
+custom_start()   { default_start   "$@"; }
+custom_stop()    { default_stop    "$@"; }
+custom_poll()    { default_poll    "$@"; }
 
-# The device of the wireless network
-WIFI_INTERFACE=wlan0
-
-# /etc/minirc.conf gives you a chance to override the daemon variables
-test -f /etc/minirc.conf && source /etc/minirc.conf
-
-self="$(basename $0)"
-usage() {
-    echo "Usage: $self [--help] [--version] <action> [list of daemons]"
-    echo
-    echo "Actions:"
-    echo "   $self list     shows status of all daemons (default action)"
-    echo "   $self init     initialize the system (use in /etc/inittab only!)"
-    echo "   $self start    starts daemons"
-    echo "   $self stop     stops daemons"
-    echo "   $self restart  restarts daemons"
-}
+source /etc/minirc.conf
 
 on_boot() {
     #===================
@@ -66,22 +55,24 @@ on_boot() {
 
     #===================
     # load rc.local
-    echo_color 3 loading /etc/rc.local...
-    test -f /etc/rc.local && source /etc/rc.local
-    
+    if [ -x /etc/minirc.local ]; then
+        echo_color 3 loading /etc/minirc.local...
+        /etc/minirc.local
+    fi
+
     #===================
     # start the default daemons
     echo_color 3 starting daemons...
-    for dmn in $DEFAULT_DAEMONS; do
+    for dmn in $ENABLED; do
         if [[ "${dmn:0:1}" == '@' ]]; then
-            start_process "${dmn:1}" &
+            custom_start "${dmn:1}" &
         else
-            start_process "$dmn"
+            custom_start "$dmn"
         fi
     done
 }
 
-start_process() {
+default_start() {
     echo_color 2 starting "$1"...
     case "$1" in
     alsa)
@@ -114,7 +105,7 @@ start_process() {
     esac
 }
 
-stop_process() {
+default_stop() {
     echo_color 1 stopping "$1"...
     case "$1" in
     alsa)
@@ -132,9 +123,9 @@ stop_process() {
     esac
 }
 
-restart_process() { stop_process "$@"; start_process "$@"; }
+default_restart() { custom_stop "$@"; custom_start "$@"; }
 
-poll_process() {
+default_poll() {
     case "$1" in
     alsa)
         return 0;;  # doesn't make much sense for this service
@@ -161,13 +152,13 @@ init)
 start|stop|restart)
     cmd="$1"
     shift
-    for dmn in ${@:-$ALL_DAEMONS}; do
-        ${cmd}_process "$dmn"
+    for dmn in ${@:-$DAEMONS}; do
+        custom_${cmd} "$dmn"
     done;;
 ''|list)
     # list all daemons and their status
-    for dmn in $ALL_DAEMONS; do
-        if poll_process "$dmn" >& /dev/null; then
+    for dmn in $DAEMONS; do
+        if custom_poll "$dmn" >& /dev/null; then
             echo_color 2 [X] $dmn
         else
             echo_color 0 [ ] $dmn
@@ -176,5 +167,13 @@ start|stop|restart)
 --version)
     echo minirc 0.1;;
 *)
-    usage;;
+    self=$(basename "$0")
+    echo "Usage: $self [--help] [--version] <action> [list of daemons]"
+    echo
+    echo "Actions:"
+    echo "   $self list     shows status of all daemons (default action)"
+    echo "   $self init     initialize the system (use in /etc/inittab only!)"
+    echo "   $self start    starts daemons"
+    echo "   $self stop     stops daemons"
+    echo "   $self restart  restarts daemons";;
 esac
