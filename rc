@@ -38,7 +38,7 @@ on_boot() {
 
     echo_color 3 initializing udev...
     if [ "$UDEV" == systemd ]; then
-        /usr/bin/udevd --daemon
+        /usr/lib/systemd/systemd-udevd --daemon
         /usr/bin/udevadm trigger --action=add --type=subsystems
         /usr/bin/udevadm trigger --action=add --type=devices
     else # use busybox mdev as fallback:
