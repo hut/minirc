@@ -8,7 +8,12 @@ fi
 
 echo "==> Installing /sbin/rc, /etc/minirc.conf, /etc/inittab"
 install -Dm755 rc "$ROOT"/sbin/rc
-install -Dm644 minirc.local "$ROOT"/etc/minirc.local
+if [ -f "$ROOT"/etc/minirc.conf ]; then
+    echo ":: Warning: '$ROOT/etc/minirc.conf' already exists!"
+    echo "   Moving it to '$ROOT/etc/minirc.conf.backup'."
+    mv "$ROOT"/etc/minirc.conf "$ROOT"/etc/minirc.conf.backup
+fi
+install -Dm644 minirc.conf "$ROOT"/etc/minirc.conf
 install -Dm644 inittab "$ROOT"/etc/inittab
 
 echo "==> Installing extras"
