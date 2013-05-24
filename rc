@@ -93,7 +93,7 @@ start_process() {
     iptables)
         /usr/sbin/iptables-restore < /etc/iptables/iptables.rules;;
     sshd)
-        /usr/sbin/sshd;;  # requires an absolute path
+        /usr/bin/sshd;;  # requires an absolute path
     privoxy)
         /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config;;
     polipo)
