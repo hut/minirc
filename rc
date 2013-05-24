@@ -165,7 +165,7 @@ start|stop|restart)
         fi
     done;;
 --version)
-    echo minirc 0.1;;
+    echo minirc 0.2;;
 *)
     self=$(basename "$0")
     echo "Usage: $self [--help] [--version] <action> [list of daemons]"
