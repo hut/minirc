@@ -78,27 +78,27 @@ default_start() {
     alsa)
         alsactl restore;;
     bitlbee)
-        su -s /bin/sh -c '/usr/sbin/bitlbee -F' bitlbee;;
+        su -s /bin/sh -c 'bitlbee -F' bitlbee;;
     dbus)
         dbus-launch;;
     iptables)
-        /usr/sbin/iptables-restore < /etc/iptables/iptables.rules;;
+        iptables-restore < /etc/iptables/iptables.rules;;
     sshd)
         /usr/bin/sshd;;  # requires an absolute path
     privoxy)
-        /usr/sbin/privoxy --user privoxy.privoxy /etc/privoxy/config;;
+        privoxy --user privoxy.privoxy /etc/privoxy/config;;
     polipo)
-        su -c '/usr/bin/polipo daemonise=true logFile="/var/log/polipo.log"' -s /bin/sh - nobody;;
+        su -c 'polipo daemonise=true logFile="/var/log/polipo.log"' -s /bin/sh - nobody;;
     dhcpcd)
-        /usr/sbin/dhcpcd -nqb;;
+        dhcpcd -nqb;;
     vsftpd)
-        /usr/sbin/vsftpd &;;
+        vsftpd &;;
     lighttpd)
-        /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf;;
+        lighttpd -f /etc/lighttpd/lighttpd.conf;;
     ntpd)
-        /usr/bin/ntpd -g -u ntp;;
+        ntpd -g -u ntp;;
     wpa_supplicant)
-        /usr/sbin/wpa_supplicant -Dwext -B -i"$WIFI_INTERFACE" -c/etc/wpa_supplicant.conf;;
+        wpa_supplicant -Dwext -B -i"$WIFI_INTERFACE" -c/etc/wpa_supplicant.conf;;
     *)
         # fallback: start the command
         "$1";;
