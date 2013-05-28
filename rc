@@ -90,6 +90,13 @@ default_start() {
     polipo)
         su -c 'polipo daemonise=true logFile="/var/log/polipo.log"' -s /bin/sh - nobody;;
     dhcpcd)
+        if ip link | grep -Fq $NETWORK_INTERFACE; then :; else
+            echo_color 3 "waiting for $NETWORK_INTERFACE to settle..."
+            for i in $(seq 100); do
+                ip link | grep -Fq $NETWORK_INTERFACE && break
+                sleep 0.1
+            done
+        fi
         dhcpcd -nqb;;
     vsftpd)
         vsftpd &;;
