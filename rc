@@ -106,6 +106,8 @@ default_start() {
         ntpd -g -u ntp;;
     wpa_supplicant)
         wpa_supplicant -Dwext -B -i"$WIFI_INTERFACE" -c/etc/wpa_supplicant.conf;;
+    icecast)
+        icecast -b -c /etc/icecast.xml;;
     *)
         # fallback: start the command
         "$1";;
