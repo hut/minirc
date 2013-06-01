@@ -72,6 +72,38 @@ on_boot() {
     done
 }
 
+on_shutdown() {
+    #===================
+    # stop the default daemons
+    echo_color 3 stopping daemons...
+    $0 stop
+
+    #===================
+    # load minirc.local.shutdown
+    if [ -x /etc/minirc.local.shutdown ]; then
+        echo_color 3 loading /etc/minirc.local.shutdown...
+        /etc/minirc.local.shutdown
+    fi
+
+    echo_color 3 shutting down udev...
+    if [ "$UDEV" == systemd ]; then
+        killall systemd-udevd
+    else # if busybox mdev is used:
+        :
+        #busybox mdev -s
+        #echo /sbin/mdev > /proc/sys/kernel/hotplug
+    fi
+
+    #===================
+    # umount the API filesystem
+    # /proc, /sys, /run, /dev, /run/lock, /dev/pts, /dev/shm
+    echo_color 3 unmounting API filesystem...
+    umount -r /run
+
+    echo_color 3 bringing down loopback device...
+    /usr/sbin/ip link set down dev lo
+}
+
 default_start() {
     echo_color 2 starting "$1"...
     case "$1" in
@@ -159,6 +191,8 @@ echo_color() {
 case "$1" in
 init)
     on_boot;;
+shutdown)
+    on_shutdown;;
 start|stop|restart)
     cmd="$1"
     shift

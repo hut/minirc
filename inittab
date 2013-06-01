@@ -18,7 +18,8 @@ tty4::respawn:/sbin/agetty -8 -s 38400 tty4 linux
 #::ctrlaltdel:/bin/kill -USR2 1
 
 # Stop all services on shutdown
-::shutdown:/sbin/rc stop
+::shutdown:/sbin/rc shutdown
 
 # Unmount everything on shutdown
 ::shutdown:/bin/umount -a -r
+::shutdown:/bin/mount -o remount,ro /
