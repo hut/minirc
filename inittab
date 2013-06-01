@@ -20,6 +20,14 @@ tty4::respawn:/sbin/agetty -8 -s 38400 tty4 linux
 # Stop all services on shutdown
 ::shutdown:/sbin/rc shutdown
 
+# Killing everything on shutdown
+::shutdown:echo :: sending SIGTERM to all
+::shutdown:/bin/kill -s TERM -1
+::shutdown:sleep 1
+::shutdown:echo :: sending SIGKILL to all
+::shutdown:/bin/kill -s KILL -1
+
 # Unmount everything on shutdown
+::shutdown:echo :: unmounting everything
 ::shutdown:/bin/umount -a -r
 ::shutdown:/bin/mount -o remount,ro /
