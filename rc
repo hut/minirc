@@ -99,9 +99,6 @@ on_shutdown() {
     # /proc, /sys, /run, /dev, /run/lock, /dev/pts, /dev/shm
     echo_color 3 unmounting API filesystem...
     umount -r /run
-
-    echo_color 3 bringing down loopback device...
-    /usr/sbin/ip link set down dev lo
 }
 
 default_start() {
