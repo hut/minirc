@@ -85,18 +85,15 @@ on_shutdown() {
         /etc/minirc.local.shutdown
     fi
 
+    #===================
+    # shut down udev
     echo_color 3 shutting down udev...
     if [ "$UDEV" == systemd ]; then
         killall systemd-udevd
-    else # if busybox mdev is used:
-        :
-        #busybox mdev -s
-        #echo /sbin/mdev > /proc/sys/kernel/hotplug
     fi
 
     #===================
     # umount the API filesystem
-    # /proc, /sys, /run, /dev, /run/lock, /dev/pts, /dev/shm
     echo_color 3 unmounting API filesystem...
     umount -r /run
 }
