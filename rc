@@ -76,7 +76,7 @@ on_shutdown() {
     #===================
     # stop the default daemons
     echo_color 3 stopping daemons...
-    $0 stop
+    "$0" stop
 
     #===================
     # load minirc.local.shutdown
