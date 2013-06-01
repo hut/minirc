@@ -4,9 +4,8 @@
 
 # Fallback Configuration Values, to be able to run even with a broken, deleted
 # or outdated minirc.conf:
-DAEMONS="syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
-ENABLED="@syslog-ng @crond @dhcpcd @sshd"
-UDEV="busybox"
+DAEMONS="systemd-udevd syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
+ENABLED="systemd-udevd @syslog-ng @crond @dhcpcd @sshd"
 NETWORK_INTERFACE="eth0"
 WIFI_INTERFACE="wlan0"
 
@@ -35,16 +34,6 @@ on_boot() {
     # initialize system
     echo_color 3 setting up loopback device...
     /usr/sbin/ip link set up dev lo
-
-    echo_color 3 initializing udev...
-    if [ "$UDEV" == systemd ]; then
-        /usr/lib/systemd/systemd-udevd --daemon
-        /usr/bin/udevadm trigger --action=add --type=subsystems
-        /usr/bin/udevadm trigger --action=add --type=devices
-    else # use busybox mdev as fallback:
-        busybox mdev -s
-        echo /sbin/mdev > /proc/sys/kernel/hotplug
-    fi
 
     echo_color 3 setting hostname...
     cat /etc/hostname >| /proc/sys/kernel/hostname
@@ -86,13 +75,6 @@ on_shutdown() {
     fi
 
     #===================
-    # shut down udev
-    echo_color 3 shutting down udev...
-    if [ "$UDEV" == systemd ]; then
-        killall systemd-udevd
-    fi
-
-    #===================
     # umount the API filesystem
     echo_color 3 unmounting API filesystem...
     umount -r /run
@@ -105,6 +87,13 @@ default_start() {
         for dmn in $DAEMONS $ENABLED; do
             custom_poll "${dmn##@}" || custom_start "${dmn##@}"
         done;;
+    systemd-udevd)
+        /usr/lib/systemd/systemd-udevd --daemon
+        udevadm trigger --action=add --type=subsystems
+        udevadm trigger --action=add --type=devices;;
+    mdev)
+        busybox mdev -s
+        echo /sbin/mdev > /proc/sys/kernel/hotplug;;
     alsa)
         alsactl restore;;
     bitlbee)
