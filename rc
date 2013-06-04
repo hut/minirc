@@ -42,6 +42,11 @@ on_boot() {
     mount -a
     mount -o remount,rw /
 
+    echo_color 3 loading modules...
+    for module in $MODULES; do
+        modprobe -- $module;
+    done
+
     #===================
     # load /etc/minirc.local
     if [ -x /etc/minirc.local ]; then
