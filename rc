@@ -4,8 +4,9 @@
 
 # Fallback Configuration Values, to be able to run even with a broken, deleted
 # or outdated minirc.conf:
+SYSTEM="mount-api @loopback @hostname mount-fstab mount-root-rw modules minirc.conf"
 DAEMONS="systemd-udevd syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
-ENABLED="systemd-udevd @syslog-ng @crond @dhcpcd @sshd"
+ENABLED="$SYSTEM systemd-udevd @syslog-ng @crond @dhcpcd @sshd"
 NETWORK_INTERFACE="eth0"
 WIFI_INTERFACE="wlan0"
 
@@ -16,74 +17,6 @@ custom_stop()    { default_stop    "$@"; }
 custom_poll()    { default_poll    "$@"; }
 
 source /etc/minirc.conf
-
-on_boot() {
-    #===================
-    # mount the API filesystem
-    # /proc, /sys, /run, /dev, /run/lock, /dev/pts, /dev/shm
-    echo_color 3 mounting API filesystem...
-    mountpoint -q /proc    || mount -t proc proc /proc -o nosuid,noexec,nodev
-    mountpoint -q /sys     || mount -t sysfs sys /sys -o nosuid,noexec,nodev
-    mountpoint -q /run     || mount -t tmpfs run /run -o mode=0755,nosuid,nodev
-    mountpoint -q /dev     || mount -t devtmpfs dev /dev -o mode=0755,nosuid
-    mkdir -p /dev/{pts,shm}
-    mountpoint -q /dev/pts || mount -t devpts devpts /dev/pts -o mode=0620,gid=5,nosuid,noexec
-    mountpoint -q /dev/shm || mount -t tmpfs shm /dev/shm -o mode=1777,nosuid,nodev
-
-    #===================
-    # initialize system
-    echo_color 3 setting up loopback device...
-    /usr/sbin/ip link set up dev lo
-
-    echo_color 3 setting hostname...
-    cat /etc/hostname >| /proc/sys/kernel/hostname
-
-    echo_color 3 mounting...
-    mount -a
-    mount -o remount,rw /
-
-    echo_color 3 loading modules...
-    for module in $MODULES; do
-        modprobe -- $module;
-    done
-
-    #===================
-    # load /etc/minirc.local
-    if [ -x /etc/minirc.local ]; then
-        echo_color 3 loading /etc/minirc.local...
-        /etc/minirc.local
-    fi
-
-    #===================
-    # start the default daemons
-    echo_color 3 starting daemons...
-    for dmn in $ENABLED; do
-        if [[ "${dmn:0:1}" == '@' ]]; then
-            custom_start "${dmn:1}" &
-        else
-            custom_start "$dmn"
-        fi
-    done
-}
-
-on_shutdown() {
-    #===================
-    # stop the default daemons
-    echo_color 3 stopping daemons...
-    custom_stop all
-
-    #===================
-    # load minirc.local.shutdown
-    if [ -x /etc/minirc.local.shutdown ]; then
-        echo_color 3 loading /etc/minirc.local.shutdown...
-        /etc/minirc.local.shutdown
-    fi
-
-    #===================
-    # umount the API filesystem
-    echo_color 3 unmounting API filesystem...
-    umount -r /run
-}
 
 default_start() {
     echo_color 2 starting "$1"...
@@ -132,6 +65,34 @@ default_start() {
         wpa_supplicant -Dwext -B -i"$WIFI_INTERFACE" -c/etc/wpa_supplicant.conf;;
     icecast)
         icecast -b -c /etc/icecast.xml;;
+
+    # =========================
+    # These entries are mainly for booting up the system:
+    mount-api)
+        mountpoint -q /proc    || mount -t proc proc /proc -o nosuid,noexec,nodev
+        mountpoint -q /sys     || mount -t sysfs sys /sys -o nosuid,noexec,nodev
+        mountpoint -q /run     || mount -t tmpfs run /run -o mode=0755,nosuid,nodev
+        mountpoint -q /dev     || mount -t devtmpfs dev /dev -o mode=0755,nosuid
+        mkdir -p /dev/{pts,shm}
+        mountpoint -q /dev/pts || mount -t devpts devpts /dev/pts -o mode=0620,gid=5,nosuid,noexec
+        mountpoint -q /dev/shm || mount -t tmpfs shm /dev/shm -o mode=1777,nosuid,nodev
+        ;;
+    loopback)
+        /usr/sbin/ip link set up dev lo;;
+    hostname)
+        cat /etc/hostname >| /proc/sys/kernel/hostname;;
+    mount-fstab)
+        mount -a;;
+    mount-root-rw)
+        mount -o remount,rw /;;
+    modules)
+        for module in $MODULES; do
+            modprobe -- $module;
+        done;;
+    minirc.local)
+        if [ -x /etc/minirc.local ]; then
+            /etc/minirc.local
+        fi;;
     *)
         # fallback: start the command
         "$1";;
@@ -154,6 +115,11 @@ default_stop() {
         for table in $(cat /proc/net/ip_tables_names); do
             iptables-restore < /var/lib/iptables/empty-$table.rules
         done;;
+    minirc.local)
+        if [ -x /etc/minirc.local.shutdown ]; then
+            echo_color 3 running /etc/minirc.local.shutdown...
+            /etc/minirc.local.shutdown
+        fi;;
     *)
         # fallback: kill all processes with the name of the command
         killall "$1";;
@@ -186,9 +152,18 @@ echo_color() {
 # handle arguments
 case "$1" in
 init)
-    on_boot;;
+    echo_color 3 starting daemons...
+    for dmn in $ENABLED; do
+        if [[ "${dmn:0:1}" == '@' ]]; then
+            custom_start "${dmn:1}" &
+        else
+            custom_start "$dmn"
+        fi
+    done;;
 shutdown)
-    on_shutdown;;
+    echo_color 3 stopping daemons...
+    custom_stop all
+    umount -r /run;;
 start|stop|restart)
     cmd="$1"
     shift
