@@ -41,6 +41,10 @@ on_boot() {
         /usr/lib/systemd/systemd-udevd --daemon
         /usr/bin/udevadm trigger --action=add --type=subsystems
         /usr/bin/udevadm trigger --action=add --type=devices
+    elif [ "$UDEV" == eudev ]; then
+        /usr/bin/udevd --daemon
+        /usr/bin/udevadm trigger --action=add --type=subsystems
+        /usr/bin/udevadm trigger --action=add --type=devices
     else # use busybox mdev as fallback:
         busybox mdev -s
         echo /sbin/mdev > /proc/sys/kernel/hotplug
