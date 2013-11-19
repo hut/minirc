@@ -27,7 +27,8 @@ what you're doing.
 Installing
 ----------
 
-Dependencies: busybox, optionally systemd (for udev)
+Dependencies: busybox, optionally systemd (for udev), 
+optionally eudev (for udev)
 
 NOTE: The archlinux AUR package does step 1 for you.
 
