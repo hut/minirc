@@ -91,12 +91,14 @@ Further configuration
 1. udev
 
 You need to decide what to use to set up the devices and load the modules.
-minirc supports busybox's mdev and systemd's udev by default.  You can change
-the udev system by writing UDEV=systemd or UDEV=busybox respectively into
-/etc/minirc.conf.
+minirc supports busybox's mdev, systemd's udev, and a fork of udev, eudev, by
+default.  You can change the udev system by writing UDEV=busybox, UDEV=systemd,
+or UDEV=eudev respectively into /etc/minirc.conf.
 
 systemd's udev works out of the box, so it's recommended.  To set up mdev, you
-can use this as a reference: https://github.com/slashbeast/mdev-like-a-boss
+can use this as a reference: https://github.com/slashbeast/mdev-like-a-boss.
+eudev support is still early, but it seems to work as well as systemd's udev
+upon first look.
 
 
 Usage of the user space program
