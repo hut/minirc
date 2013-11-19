@@ -94,6 +94,8 @@ on_shutdown() {
     echo_color 3 shutting down udev...
     if [ "$UDEV" == systemd ]; then
         killall systemd-udevd
+    elif [ "$UDEV" == eudev ]; then
+        killall udevd
     fi
 
     #===================
