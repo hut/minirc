@@ -98,6 +98,13 @@ the udev system by writing UDEV=systemd or UDEV=busybox respectively into
 systemd's udev works out of the box, so it's recommended.  To set up mdev, you
 can use this as a reference: https://github.com/slashbeast/mdev-like-a-boss
 
+2. Local startup script
+
+Minirc will run /etc/minirc.local on boot if the file exists and has the
+executable bit set. This allows the user to run commands in addition to the
+basic startup that minirc provides. This is a good place to load modules if
+mdev does not detect that they should be loaded on boot.
+
 
 Usage of the user space program
 -------------------------------
