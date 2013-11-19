@@ -100,6 +100,13 @@ can use this as a reference: https://github.com/slashbeast/mdev-like-a-boss.
 eudev support is still early, but it seems to work as well as systemd's udev
 upon first look.
 
+2. Local startup script
+
+Minirc will run /etc/minirc.local on boot if the file exists and has the
+executable bit set. This allows the user to run commands in addition to the
+basic startup that minirc provides. This is a good place to load modules if
+mdev does not detect that they should be loaded on boot.
+
 
 Usage of the user space program
 -------------------------------
