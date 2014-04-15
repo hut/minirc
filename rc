@@ -223,9 +223,8 @@ start|stop|restart)
     echo "Usage: $self [--help] [--version] <action> [list of daemons]"
     echo
     echo "Actions:"
-    echo "   $self list     shows status of all daemons (default action)"
-    echo "   $self init     initialize the system (use in /etc/inittab only!)"
-    echo "   $self start    starts daemons"
-    echo "   $self stop     stops daemons"
-    echo "   $self restart  restarts daemons";;
+    echo "   $self list               shows status of all daemons (default action)"
+    echo "   $self start [daemons]    starts daemons"
+    echo "   $self stop [daemons]     stops daemons"
+    echo "   $self restart [daemons]  restarts daemons";;
 esac
