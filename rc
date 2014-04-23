@@ -180,6 +180,8 @@ default_poll() {
         return 0;;  # doesn't make much sense for this service
     iptables)
         iptables -L | grep -m 1 -q '^ACCEPT\|^REJECT';;
+    dbus)
+        pgrep '(^|/)dbus-daemon$' >& /dev/null;;
     *)
         # fallback: check if any processes of that name are running
         pgrep "(^|/)$1\$" >& /dev/null;;
