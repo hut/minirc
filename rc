@@ -16,7 +16,7 @@ custom_start()   { default_start   "$@"; }
 custom_stop()    { default_stop    "$@"; }
 custom_poll()    { default_poll    "$@"; }
 
-source /etc/minirc.conf
+. /etc/minirc.conf
 
 on_boot() {
     #===================
@@ -27,7 +27,7 @@ on_boot() {
     mountpoint -q /sys     || mount -t sysfs sys /sys -o nosuid,noexec,nodev
     mountpoint -q /run     || mount -t tmpfs run /run -o mode=0755,nosuid,nodev
     mountpoint -q /dev     || mount -t devtmpfs dev /dev -o mode=0755,nosuid
-    mkdir -p /dev/{pts,shm}
+    mkdir -p /dev/pts /dev/shm
     mountpoint -q /dev/pts || mount -t devpts devpts /dev/pts -o mode=0620,gid=5,nosuid,noexec
     mountpoint -q /dev/shm || mount -t tmpfs shm /dev/shm -o mode=1777,nosuid,nodev
 
@@ -37,11 +37,11 @@ on_boot() {
     /usr/sbin/ip link set up dev lo
 
     echo_color 3 initializing udev...
-    if [ "$UDEV" == systemd ]; then
+    if [ "$UDEV" = systemd ]; then
         /usr/lib/systemd/systemd-udevd --daemon
         /usr/bin/udevadm trigger --action=add --type=subsystems
         /usr/bin/udevadm trigger --action=add --type=devices
-    elif [ "$UDEV" == eudev ]; then
+    elif [ "$UDEV" = eudev ]; then
         /usr/bin/udevd --daemon
         /usr/bin/udevadm trigger --action=add --type=subsystems
         /usr/bin/udevadm trigger --action=add --type=devices
@@ -68,8 +68,8 @@ on_boot() {
     # start the default daemons
     echo_color 3 starting daemons...
     for dmn in $ENABLED; do
-        if [[ "${dmn:0:1}" == '@' ]]; then
-            custom_start "${dmn:1}" &
+        if [ $(echo $dmn | awk '{ s=substr($0, 1, 1); print s; }') = '@' ]; then
+            custom_start $(echo $dmn | awk '{ s=substr($0, 2); print s; }') &
         else
             custom_start "$dmn"
         fi
@@ -92,9 +92,9 @@ on_shutdown() {
     #===================
     # shut down udev
     echo_color 3 shutting down udev...
-    if [ "$UDEV" == systemd ]; then
+    if [ "$UDEV" = systemd ]; then
         killall systemd-udevd
-    elif [ "$UDEV" == eudev ]; then
+    elif [ "$UDEV" = eudev ]; then
         killall udevd
     fi
 
@@ -130,7 +130,7 @@ default_start() {
             echo_color 3 "waiting for $NETWORK_INTERFACE to settle..."
             for i in $(seq 100); do
                 ip link | grep -Fq $NETWORK_INTERFACE && break
-                sleep 0.1
+                sleep 1
             done
         fi
         dhcpcd -nqb;;
@@ -181,10 +181,10 @@ default_poll() {
     iptables)
         iptables -L | grep -m 1 -q '^ACCEPT\|^REJECT';;
     dbus)
-        pgrep '(^|/)dbus-daemon$' >& /dev/null;;
+        pgrep '(^|/)dbus-daemon$' >/dev/null 2>&1;;
     *)
         # fallback: check if any processes of that name are running
-        pgrep "(^|/)$1\$" >& /dev/null;;
+        pgrep "(^|/)$1\$" >/dev/null 2>&1;;
     esac
 }
 
@@ -212,7 +212,7 @@ start|stop|restart)
 ''|list)
     # list all daemons and their status
     for dmn in $DAEMONS; do
-        if custom_poll "$dmn" >& /dev/null; then
+        if custom_poll "$dmn" >/dev/null 2>&1; then
             echo_color 2 [X] $dmn
         else
             echo_color 0 [ ] $dmn
