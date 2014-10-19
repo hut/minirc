@@ -116,7 +116,7 @@ default_start() {
     bitlbee)
         su -s /bin/sh -c 'bitlbee -F' bitlbee;;
     dbus)
-        dbus-launch;;
+        mkdir -p /run/dbus && dbus-daemon --system;;
     iptables)
         iptables-restore < /etc/iptables/iptables.rules;;
     sshd)
@@ -161,7 +161,8 @@ default_stop() {
         alsactl store;;
     dbus)
         killall dbus-launch
-        killall dbus-daemon;;
+        killall dbus-daemon
+        rm /run/dbus/pid;;
     iptables)
         for table in $(cat /proc/net/ip_tables_names); do
             iptables-restore < /var/lib/iptables/empty-$table.rules
@@ -181,7 +182,7 @@ default_poll() {
     iptables)
         iptables -L | grep -m 1 -q '^ACCEPT\|^REJECT';;
     dbus)
-        pgrep '(^|/)dbus-daemon$' >/dev/null 2>&1;;
+        test -e /run/dbus/pid;;
     *)
         # fallback: check if any processes of that name are running
         pgrep "(^|/)$1\$" >/dev/null 2>&1;;
