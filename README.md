@@ -11,6 +11,8 @@ individually start or stop them.
 It was developed for arch linux to get rid of systemd, but it can probably run
 on other distributions as well.
 
+![screenshot](screenshot.png)
+
 
 Installing
 ----------
@@ -80,21 +82,21 @@ Further configuration
 
 1. udev
 
-You need to decide what to use to set up the devices and load the modules.
-minirc supports busybox's mdev, systemd's udev, and a fork of udev, eudev, by
-default.  You can change the udev system by writing UDEV=busybox, UDEV=systemd,
-or UDEV=eudev respectively into /etc/minirc.conf.
+   You need to decide what to use to set up the devices and load the modules.
+   minirc supports busybox's mdev, systemd's udev, and a fork of udev, eudev,
+   by default.  You can change the udev system by writing UDEV=busybox,
+   UDEV=systemd, or UDEV=eudev respectively into /etc/minirc.conf.
 
-eudev and systemd's udev work out of the box, so they are recommended.  To set
-up mdev, you can use this as a reference:
-https://github.com/slashbeast/mdev-like-a-boss.
+   eudev and systemd's udev work out of the box, so they are recommended.  To
+   set up mdev, you can use this as a reference:
+   https://github.com/slashbeast/mdev-like-a-boss.
 
 2. Local startup script
 
-Minirc will run /etc/minirc.local on boot if the file exists and has the
-executable bit set. This allows the user to run commands in addition to the
-basic startup that minirc provides. This is a good place to load modules if
-udev does not detect that they should be loaded on boot.
+   Minirc will run /etc/minirc.local on boot if the file exists and has the
+   executable bit set. This allows the user to run commands in addition to the
+   basic startup that minirc provides. This is a good place to load modules if
+   udev does not detect that they should be loaded on boot.
 
 
 Usage of the user space program
@@ -107,8 +109,8 @@ process, when called by busybox init.
 About
 -----
 
-Authors: Roman Zimbelmann, Sam Stuewe
-License: GPL2
+* Authors: Roman Zimbelmann, Sam Stuewe
+* License: GPL2
 
 Parts of the function on_boot() and the start/stop function of iptables were
 taken from archlinux initscripts (http://www.archlinux.org).  I was unable to
