@@ -116,7 +116,9 @@ default_start() {
     bitlbee)
         su -s /bin/sh -c 'bitlbee -F' bitlbee;;
     dbus)
-        mkdir -p /run/dbus && dbus-daemon --system;;
+        mkdir -p /run/dbus &&
+            dbus-uuidgen --ensure &&
+            dbus-daemon --system;;
     iptables)
         iptables-restore < /etc/iptables/iptables.rules;;
     sshd)
