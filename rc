@@ -175,7 +175,16 @@ default_stop() {
     esac
 }
 
-default_restart() { custom_stop "$@"; custom_start "$@"; }
+default_restart() {
+    case "$1" in
+    sshd)
+        # Make sure minirc doesn't hang up when restarting it remotely
+        setsid sh -c '"$0" stop "$@"; "$0" start "$@"' "$0" "$@";;
+    *)
+        custom_stop "$@"
+        custom_start "$@";;
+    esac
+}
 
 default_poll() {
     case "$1" in
