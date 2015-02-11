@@ -4,7 +4,7 @@
 
 # Fallback Configuration Values, to be able to run even with a broken, deleted
 # or outdated minirc.conf:
-DAEMONS="syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd"
+DAEMONS="syslog-ng iptables alsa crond dbus wpa_supplicant dhcpcd sshd privoxy polipo acpid mpd vsftpd lighttpd ntpd haveged"
 ENABLED="@syslog-ng @crond @dhcpcd @sshd"
 UDEV="busybox"
 NETWORK_INTERFACE="eth0"
