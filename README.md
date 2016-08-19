@@ -105,6 +105,9 @@ Usage of the user space program
 Run "rc --help" for information.  Never run "rc init" except during the boot
 process, when called by busybox init.
 
+Arch Wiki page
+--------------------------------
+(https://wiki.archlinux.org/index.php/Minirc)
 
 About
 -----
