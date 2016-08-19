@@ -59,13 +59,6 @@ on_boot() {
     mount -o remount,rw /
 
     #===================
-    # load /etc/minirc.local
-    if [ -x /etc/minirc.local ]; then
-        echo_color 3 loading /etc/minirc.local...
-        /etc/minirc.local
-    fi
-
-    #===================
     # start the default daemons
     echo_color 3 starting daemons...
     for dmn in $ENABLED; do
@@ -75,6 +68,13 @@ on_boot() {
             custom_start "$dmn"
         fi
     done
+    
+    #===================
+    # load /etc/minirc.local
+    if [ -x /etc/minirc.local ]; then
+        echo_color 3 loading /etc/minirc.local...
+        /etc/minirc.local
+    fi
 }
 
 on_shutdown() {
