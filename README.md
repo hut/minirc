@@ -105,10 +105,6 @@ Usage of the user space program
 Run "rc --help" for information.  Never run "rc init" except during the boot
 process, when called by busybox init.
 
-Arch Wiki page
---------------------------------
-(https://wiki.archlinux.org/index.php/Minirc)
-
 About
 -----
 
@@ -118,3 +114,5 @@ About
 Parts of the function on_boot() and the start/stop function of iptables were
 taken from archlinux initscripts (http://www.archlinux.org).  I was unable to
 determine the author or authors of those parts.
+
+More information on the Arch Wiki: https://wiki.archlinux.org/index.php/Minirc
