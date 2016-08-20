@@ -10,6 +10,8 @@ UDEV="busybox"
 NETWORK_INTERFACE="eth0"
 WIFI_INTERFACE="wlan0"
 HOSTNAME="$(cat /etc/hostname)"
+LOCAL_STARTUP="after"
+LOCAL_SHUTDOWN="after"
 
 # User-definable start/stop/restart/poll functions which fall back to defaults
 custom_restart() { default_restart "$@"; }
@@ -59,6 +61,15 @@ on_boot() {
     mount -o remount,rw /
 
     #===================
+    if [ "$LOCAL_STARTUP" == "before" ]; then
+    # load /etc/minirc.local
+    if [ -x /etc/minirc.local ]; then
+        echo_color 3 loading /etc/minirc.local...
+        /etc/minirc.local
+    fi
+    fi
+    
+    #===================
     # start the default daemons
     echo_color 3 starting daemons...
     for dmn in $ENABLED; do
@@ -70,26 +81,40 @@ on_boot() {
     done
     
     #===================
+   if [ "$LOCAL_STARTUP" == "after" ]; then
     # load /etc/minirc.local
     if [ -x /etc/minirc.local ]; then
         echo_color 3 loading /etc/minirc.local...
         /etc/minirc.local
     fi
+    fi
 }
 
 on_shutdown() {
+    
     #===================
-    # stop the default daemons
-    echo_color 3 stopping daemons...
-    custom_stop all
-
-    #===================
+    if [ "$LOCAL_SHUTDOWN" == "after" ]; then
     # load minirc.local.shutdown
     if [ -x /etc/minirc.local.shutdown ]; then
         echo_color 3 loading /etc/minirc.local.shutdown...
         /etc/minirc.local.shutdown
     fi
-
+    fi
+    
+    #===================
+    # stop the default daemons
+    echo_color 3 stopping daemons...
+    custom_stop all
+    
+    #===================
+    if [ "$LOCAL_SHUTDOWN" == "after" ]; then
+    # load minirc.local.shutdown
+    if [ -x /etc/minirc.local.shutdown ]; then
+        echo_color 3 loading /etc/minirc.local.shutdown...
+        /etc/minirc.local.shutdown
+    fi
+    fi
+    
     #===================
     # shut down udev
     echo_color 3 shutting down udev...
