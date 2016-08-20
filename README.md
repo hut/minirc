@@ -22,18 +22,18 @@ Dependencies: busybox, optionally eudev or systemd (for udev)
 NOTE: The archlinux AUR package does step 1 for you.
 
 1. There is a setup.sh script, but you should read it first.  If you don't use
-a package manager which does the sanity checks for you, please check for
-yourself that it doesn't break your system by overwriting essential files.
-Make backups as needed.
+   a package manager which does the sanity checks for you, please check for
+   yourself that it doesn't break your system by overwriting essential files.
+   Make backups as needed.
 
-When you are confident, run "./setup.sh --force"
+   When you are confident, run "./setup.sh --force"
 
 2. Remove "init=..." from your kernel parameters (if it is there) so that the
-default value "init=/sbin/init" is used.  Check the docs of your boot loader on
-how to change the kernel parameters.
+   default value "init=/sbin/init" is used.  Check the docs of your boot loader
+   on how to change the kernel parameters.
 
 3. Configure /etc/minirc.conf to your needs.
-See sections "Dealing with services" and "Further configuration".
+   See sections "Dealing with services" and "Further configuration".
 
 4. Reboot
 
